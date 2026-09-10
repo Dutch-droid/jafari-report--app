@@ -76,9 +76,9 @@ def ensure_html_path(url: str) -> str:
     url = url.rstrip('/')
     if url.endswith('.html'):
         return url
-    return f"{url}/website.html"
+    return f"{url}/index.html"
 
-_raw_frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:5501/website.html')
+_raw_frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:5501/index.html')
 FRONTEND_URL = ensure_html_path(_raw_frontend_url)
 logger.info(f"🔗 FRONTEND_URL: {FRONTEND_URL}")
 
