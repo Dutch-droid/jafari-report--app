@@ -1,0 +1,56 @@
+# ===== Environment Variables (SECURITY CRITICAL) =====
+.env
+**/.env
+!.env.example
+
+# ===== User Data (Contains Hashed Passwords) =====
+authorized_users.json
+flask_session/
+
+# ===== Python Cache =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ===== Virtual Environments =====
+venv/
+venv_deploy/
+venv_test/
+env/
+ENV/
+.venv/
+
+# ===== IDE / Editor =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== OS Files =====
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ===== Logs =====
+*.log
+logs/
+
+# ===== Test / Coverage =====
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ===== Temporary Files =====
+*.tmp
+*.bak
+*.backup
