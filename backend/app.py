@@ -78,7 +78,7 @@ def ensure_html_path(url: str) -> str:
         return url
     return f"{url}/index.html"
 
-_raw_frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:5501/index.html')
+_raw_frontend_url = os.getenv('FRONTEND_URL', 'https://jafari-report.netlify.app')
 FRONTEND_URL = ensure_html_path(_raw_frontend_url)
 logger.info(f"🔗 FRONTEND_URL: {FRONTEND_URL}")
 
