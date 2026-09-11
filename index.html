@@ -797,7 +797,7 @@
                                 <div class="form-group">
                                     <label for="branch">Branch / Region <span class="required">*</span></label>
                                     <select id="branch" required>
-                                         <option value="narok">Narok-Olma House 2nd Floor</option>
+                                        <option value="narok">Narok-Olma House 2nd Floor</option>
                                         <option value="mombasa">Mombasa-Makadara Building 2nd Floor Room 3</option>
                                         <option value="kisumu">Kisumu Tuffoam Mall 1st Floor</option>
                                         <option value="nakuru">Nakuru-Cigma Business Center Room 3F</option>
@@ -812,7 +812,7 @@
                                         <option value="Isiolo">Isiolo-Ibada Plaza Office C3</option>
                                         <option value="bomet">Bomet-Kosal Plaza 2nd Floor Room 28</option>
                                         <option value="embu">Embu-Housing finance 4th Floor</option>
-                                        <option value="homabay">HomaBay-Glory  Building 1st Floor</option>
+                                        <option value="homabay">HomaBay-Glory Building 1st Floor</option>
                                         <option value="kilifi">Kilifi-Boabab Plaza 1st Floor Room 9</option>
                                         <option value="coast">Coast-Yusuf Ali Mansion Building 4th Floor</option>
                                         <option value="nairobi">Caxton Hse 2nd Floor Kenyatta Avenue</option>
@@ -1043,7 +1043,9 @@
                 </div>
             </div>
 
-           
+            <footer class="footer">
+                <p>© 2024 Jafari Credit | Customer Meeting Report Generator</p>
+            </footer>
         </div>
     </div>
 
@@ -1051,7 +1053,7 @@
         // ============================================================
         // CONFIGURATION
         // ============================================================
-       const API_BASE_URL = 'https://jafari-report-app.onrender.com/api';
+        const API_BASE_URL = 'https://surging-sift-almighty.ngrok-free.dev/api';
 
         const state = {
             reports: [],
@@ -1101,7 +1103,7 @@
         }
 
         // ============================================================
-        // DATE HELPERS — auto-capture today
+        // DATE HELPERS
         // ============================================================
         function getTodayDateString() {
             const now = new Date();
@@ -1136,31 +1138,31 @@
         }
 
         // ============================================================
-        // API FETCH HELPER
+        // API FETCH HELPER - with ngrok bypass header
         // ============================================================
         async function apiFetch(url, options = {}) {
             const token = localStorage.getItem('jafari_token');
             const headers = {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'ngrok-skip-browser-warning': 'true'
             };
             if (token) headers['Authorization'] = `Bearer ${token}`;
-            
+
             const mergedOptions = {
                 ...options,
                 headers: { ...headers, ...(options.headers || {}) }
             };
-            delete mergedOptions.credentials;
-            
+
             const response = await fetch(url, mergedOptions);
-            
+
             if (response.status === 401 && !url.includes('/auth/login') && !url.includes('/auth/validate-invitation') && !url.includes('/auth/setup-password')) {
                 localStorage.removeItem('jafari_token');
                 localStorage.removeItem('jafari_user');
                 showToast('Session expired. Please login again.', 'error');
                 setTimeout(() => window.location.reload(), 2000);
             }
-            
+
             return response;
         }
 
@@ -1178,7 +1180,7 @@
         async function validateAndShowPasswordSetup(token) {
             try {
                 showLoading('Validating invitation...');
-                const response = await fetch(`${API_BASE_URL}/auth/validate-invitation/${token}`);
+                const response = await apiFetch(`${API_BASE_URL}/auth/validate-invitation/${token}`);
                 const result = await response.json();
                 hideLoading();
 
@@ -1214,14 +1216,14 @@
         function setupPasswordFormListeners() {
             const passwordInput = getElement('setupPassword');
             const confirmInput = getElement('setupConfirmPassword');
-            
+
             function updateRequirements() {
                 const password = passwordInput?.value || '';
                 const confirm = confirmInput?.value || '';
-                
+
                 const reqLength = getElement('reqLength');
                 const reqMatch = getElement('reqMatch');
-                
+
                 if (password.length >= 6) {
                     reqLength.classList.add('met');
                     reqLength.querySelector('i').className = 'fas fa-check-circle';
@@ -1229,7 +1231,7 @@
                     reqLength.classList.remove('met');
                     reqLength.querySelector('i').className = 'fas fa-circle';
                 }
-                
+
                 if (password && password === confirm) {
                     reqMatch.classList.add('met');
                     reqMatch.querySelector('i').className = 'fas fa-check-circle';
@@ -1238,14 +1240,14 @@
                     reqMatch.querySelector('i').className = 'fas fa-circle';
                 }
             }
-            
+
             if (passwordInput) passwordInput.addEventListener('input', updateRequirements);
             if (confirmInput) confirmInput.addEventListener('input', updateRequirements);
         }
 
         async function handleSetupPassword(e) {
             e.preventDefault();
-            
+
             const password = getElement('setupPassword')?.value;
             const confirmPassword = getElement('setupConfirmPassword')?.value;
             const errorDiv = getElement('setupError');
@@ -1278,9 +1280,8 @@
             }
 
             try {
-                const response = await fetch(`${API_BASE_URL}/auth/setup-password`, {
+                const response = await apiFetch(`${API_BASE_URL}/auth/setup-password`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         token: state.invitationToken,
                         password: password,
@@ -1330,7 +1331,7 @@
         // ============================================================
         async function handleLogin(e) {
             e.preventDefault();
-            
+
             const email = getElement('loginEmail')?.value.trim().toLowerCase();
             const password = getElement('loginPassword')?.value.trim();
             const errorDiv = getElement('loginError');
@@ -1353,9 +1354,8 @@
 
             try {
                 showLoading('Authenticating...');
-                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                const response = await apiFetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
                 const result = await response.json();
@@ -1364,11 +1364,11 @@
                 if (result.success) {
                     localStorage.setItem('jafari_token', result.token);
                     localStorage.setItem('jafari_user', JSON.stringify(result.user));
-                    
+
                     state.isAuthenticated = true;
                     state.user = result.user;
                     state.isAdmin = result.user.is_admin || false;
-                    
+
                     showApp(result.user);
                     showToast(`Welcome ${result.user.name || result.user.email}!`, 'success');
                     setTimeout(checkDynamicsConnection, 500);
@@ -1397,10 +1397,10 @@
             getElement('loginPage').classList.remove('active');
             getElement('setupPasswordPage').classList.remove('active');
             getElement('appContainer').classList.add('active');
-            
+
             const userBadge = getElement('loggedInUser');
             if (userBadge) userBadge.textContent = user.name || user.email || 'User';
-            
+
             const roleBadge = getElement('userRoleBadge');
             if (roleBadge) {
                 if (user.is_admin) {
@@ -1411,42 +1411,39 @@
                     roleBadge.classList.remove('admin');
                 }
             }
-            
+
             const adminPanelBtn = getElement('adminPanelBtn');
             if (adminPanelBtn) {
                 adminPanelBtn.style.display = user.is_admin ? 'inline-flex' : 'none';
             }
-            
+
             const createdByEl = getElement('created_by');
             if (createdByEl && user.name) {
                 createdByEl.value = user.name;
                 createdByEl.classList.add('auto-filled');
             }
-            
+
             setTimeout(initApp, 500);
         }
 
         async function logout() {
             if (!confirm('Are you sure you want to logout?')) return;
-            
+
             const token = localStorage.getItem('jafari_token');
             if (token) {
                 try {
-                    await fetch(`${API_BASE_URL}/auth/logout`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
+                    await apiFetch(`${API_BASE_URL}/auth/logout`, { method: 'POST' });
                 } catch (e) {}
             }
-            
+
             localStorage.removeItem('jafari_token');
             localStorage.removeItem('jafari_user');
-            
+
             state.isAuthenticated = false;
             state.user = null;
             state.isAdmin = false;
             state.reports = [];
-            
+
             showLoginPage();
             const form = getElement('reportForm');
             if (form) form.reset();
@@ -1457,7 +1454,7 @@
         function checkExistingSession() {
             const savedToken = localStorage.getItem('jafari_token');
             const savedUser = localStorage.getItem('jafari_user');
-            
+
             if (savedToken && savedUser) {
                 try {
                     const user = JSON.parse(savedUser);
@@ -1478,7 +1475,7 @@
             constructor(canvasId, placeholderId, statusId) {
                 this.canvas = getElement(canvasId);
                 if (!this.canvas) return;
-                
+
                 this.ctx = this.canvas.getContext('2d');
                 this.placeholder = getElement(placeholderId);
                 this.status = getElement(statusId);
@@ -1488,7 +1485,7 @@
                 this.paths = [];
                 this.currentPath = [];
                 this.isSigned = false;
-                
+
                 this.setupCanvas();
                 this.setupEventListeners();
                 this.updatePlaceholder();
@@ -1627,8 +1624,7 @@
                     showToast('Please sign first before downloading', 'error');
                     return;
                 }
-                
-                // Build a PNG with white background + signature
+
                 const exportCanvas = document.createElement('canvas');
                 exportCanvas.width = this.canvas.width;
                 exportCanvas.height = this.canvas.height;
@@ -1636,7 +1632,7 @@
                 expCtx.fillStyle = '#ffffff';
                 expCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
                 expCtx.drawImage(this.canvas, 0, 0);
-                
+
                 const link = document.createElement('a');
                 link.download = filename || `signature_${Date.now()}.png`;
                 link.href = exportCanvas.toDataURL('image/png');
@@ -1778,13 +1774,13 @@
                 const hasPassword = user.password_set !== false;
                 const isPending = !hasPassword || user.status === 'pending';
                 const isInactive = user.status === 'inactive';
-                
+
                 let roleClass = 'user-role';
                 let roleText = user.role || 'User';
                 if (isAdmin) { roleClass += ' admin-role'; roleText = '👑 Admin'; }
                 else if (isInactive) { roleClass += ' inactive-role'; roleText = '🚫 Inactive'; }
                 else if (isPending) { roleClass += ' pending-role'; roleText = '⏳ Pending Setup'; }
-                
+
                 html += `
                     <div class="admin-user-item">
                         <div style="flex:1;">
@@ -1832,7 +1828,7 @@
             const emailEl = getElement('addUserEmail');
             const nameEl = getElement('addUserName');
             const roleEl = getElement('addUserRole');
-            
+
             const email = emailEl?.value.trim().toLowerCase();
             const name = nameEl?.value.trim();
             const role = roleEl?.value || 'user';
@@ -1845,12 +1841,12 @@
                     body: JSON.stringify({ email, name, role })
                 });
                 const result = await response.json();
-                
+
                 if (result.success) {
                     showToast(result.message || `Invitation sent to ${email}`, 'success');
                     if (emailEl) emailEl.value = '';
                     if (nameEl) nameEl.value = '';
-                    
+
                     if (result.invitation_link) {
                         const box = getElement('invitationLinkBox');
                         const linkEl = getElement('invitationLink');
@@ -1953,7 +1949,7 @@
         // ============================================================
         function initApp() {
             console.log('🚀 Initializing app...');
-            
+
             initAutoDate();
 
             state.gpsManager = new GPSLocationManager();
@@ -1967,7 +1963,6 @@
             state.teamLeaderSignaturePad = new SignaturePad('teamLeaderSignatureCanvas', 'teamLeaderSignaturePlaceholder', 'teamLeaderSignatureStatus');
             state.agentSignaturePad = new SignaturePad('agentSignatureCanvas', 'agentSignaturePlaceholder', 'agentSignatureStatus');
 
-            // Signature action buttons
             ['clearTeamLeaderSignature', 'undoTeamLeaderSignature', 'downloadTeamLeaderSignature'].forEach((id, i) => {
                 const el = getElement(id);
                 if (el) el.addEventListener('click', () => {
@@ -1988,7 +1983,6 @@
                 });
             });
 
-            // Confirmation checkbox styling
             ['teamLeaderConfirm', 'agentConfirm'].forEach(id => {
                 const cb = getElement(id);
                 const box = getElement(id + 'Box');
@@ -2136,7 +2130,7 @@
             try {
                 const response = await apiFetch(`${API_BASE_URL}/dynamics/agents/${encodeURIComponent(code)}`);
                 const result = await response.json();
-                
+
                 if (result.success && result.data) {
                     autoFillAgentData(result.data);
                     showToast(`Agent ${result.data.code || code} loaded`, 'success');
@@ -2152,7 +2146,7 @@
 
         function autoFillAgentData(data) {
             state.agentData = data;
-            
+
             ['agent_name', 'agent_type', 'agent_phone', 'agent_email'].forEach((id, i) => {
                 const keys = ['name', 'type', 'phone', 'email'];
                 const el = getElement(id);
@@ -2161,7 +2155,7 @@
 
             const display = getElement('agentInfoDisplay');
             if (display) display.style.display = 'grid';
-            
+
             const map = { agentCodeDisplay: 'code', agentTypeDisplay: 'type', agentPhoneDisplay: 'phone', agentEmailDisplay: 'email' };
             Object.entries(map).forEach(([id, key]) => {
                 const el = getElement(id);
@@ -2218,10 +2212,10 @@
             try {
                 const response = await apiFetch(`${API_BASE_URL}/dynamics/customers/${type}/${encodeURIComponent(value)}`);
                 const result = await response.json();
-                
+
                 if (result.success && result.data) {
                     displayCustomerData(result.data);
-                    
+
                     const map = { customer_name: 'Name', customer_id: 'No', customer_phone: 'Mobile_Phone_No', customer_email: 'E_Mail', customer_address: 'Address' };
                     Object.entries(map).forEach(([id, key]) => {
                         const el = getElement(id);
@@ -2253,7 +2247,7 @@
                 custPhoneDisplay: 'Mobile_Phone_No',
                 custAddressDisplay: 'Address'
             };
-            
+
             Object.entries(map).forEach(([id, key]) => {
                 const el = getElement(id);
                 if (el) {
@@ -2261,7 +2255,7 @@
                     el.textContent = (value !== undefined && value !== null && value !== '') ? value : 'N/A';
                 }
             });
-            
+
             const modEl = getElement('custModifiedDisplay');
             if (modEl) {
                 if (data.Last_Modified_DateTime) {
@@ -2269,10 +2263,10 @@
                     catch { modEl.textContent = data.Last_Modified_DateTime; }
                 } else { modEl.textContent = 'N/A'; }
             }
-            
+
             const fetchMethodEl = getElement('custFetchMethod');
             if (fetchMethodEl) fetchMethodEl.textContent = data._source || 'NAV';
-            
+
             const display = getElement('customerInfoDisplay');
             if (display) display.style.display = 'block';
         }
@@ -2284,10 +2278,9 @@
             const data = {};
             const form = getElement('reportForm');
             if (!form) return data;
-            
-            // Ensure meeting_datetime is up-to-date from split fields
+
             updateMeetingDatetime();
-            
+
             form.querySelectorAll('input, select, textarea').forEach(field => {
                 if (field.type === 'checkbox') {
                     if (field.id === 'teamLeaderConfirm' || field.id === 'agentConfirm') {
@@ -2305,7 +2298,6 @@
             data.team_leader_signed = data.team_leader_signature_image ? 'yes' : 'no';
             data.agent_signed = data.agent_signature_image ? 'yes' : 'no';
 
-            // Signature confirmations
             data.team_leader_confirmed = !!data.teamLeaderConfirm;
             data.agent_confirmed = !!data.agentConfirm;
 
@@ -2351,7 +2343,6 @@
                 return;
             }
 
-            // Warn if signature confirmation checkboxes aren't ticked
             if (!formData.team_leader_confirmed || !formData.agent_confirmed) {
                 if (!confirm('⚠️ Signature confirmation is incomplete.\n\nThe Team Lead has not confirmed that both signatures are present.\n\nContinue anyway?')) {
                     return;
@@ -2460,7 +2451,7 @@
                     </div>
                 </div>
             `).join('');
-            
+
             count.textContent = `${state.reports.length} report${state.reports.length > 1 ? 's' : ''}`;
         }
 
@@ -2494,23 +2485,22 @@
                 else if (el.tagName !== 'SELECT' && el.id !== 'meeting_date') el.value = '';
             });
             form.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-            
+
             const agentDisplay = getElement('agentInfoDisplay');
             if (agentDisplay) agentDisplay.style.display = 'none';
             const customerDisplay = getElement('customerInfoDisplay');
             if (customerDisplay) customerDisplay.style.display = 'none';
-            
+
             state.teamLeaderSignaturePad?.clear();
             state.agentSignaturePad?.clear();
             state.agentData = null;
             state.customerData = null;
-            
-            // Reset confirmation boxes
+
             ['teamLeaderConfirmBox', 'agentConfirmBox'].forEach(id => {
                 const box = getElement(id);
                 if (box) box.classList.remove('checked');
             });
-            
+
             clearLocation();
             updateMeetingDatetime();
             showToast('Form reset', 'success');
@@ -2527,28 +2517,28 @@
             getElement('generateAllBtn')?.addEventListener('click', (e) => { e.preventDefault(); generateAllReports(); });
             getElement('clearAllBtn')?.addEventListener('click', (e) => { e.preventDefault(); clearAllReports(); });
             getElement('reportForm')?.addEventListener('submit', (e) => { e.preventDefault(); generateSingleReport(); });
-            
+
             getElement('fetchAgentBtn')?.addEventListener('click', fetchAgentData);
             getElement('fetchCustomerBtn')?.addEventListener('click', fetchCustomerData);
-            
+
             getElement('agent_code')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); fetchAgentData(); } });
             getElement('customer_search_value')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); fetchCustomerData(); } });
-            
+
             getElement('getCurrentLocationBtn')?.addEventListener('click', getCurrentLocation);
             getElement('searchLocationBtn')?.addEventListener('click', searchLocation);
             getElement('clearLocationBtn')?.addEventListener('click', clearLocation);
             getElement('refreshLocationBtn')?.addEventListener('click', () => state.gpsManager?.refreshLocation());
-            
+
             getElement('adminPanelBtn')?.addEventListener('click', toggleAdminPanel);
             getElement('closeAdminPanel')?.addEventListener('click', () => getElement('adminPanel')?.classList.remove('active'));
             getElement('addUserBtn')?.addEventListener('click', addUser);
             getElement('addUserEmail')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); addUser(); } });
-            
+
             getElement('copyInvitationLink')?.addEventListener('click', () => {
                 const link = getElement('invitationLink')?.textContent;
                 if (link) navigator.clipboard.writeText(link).then(() => showToast('Link copied!', 'success'));
             });
-            
+
             getElement('goToLoginLink')?.addEventListener('click', (e) => {
                 e.preventDefault();
                 state.invitationToken = null;
@@ -2556,7 +2546,6 @@
                 showLoginPage();
             });
 
-            // Keep meeting_datetime in sync
             getElement('meeting_date')?.addEventListener('change', updateMeetingDatetime);
             getElement('meeting_time')?.addEventListener('change', updateMeetingDatetime);
 
@@ -2569,16 +2558,16 @@
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             console.log('📄 DOM loaded');
-            
+
             const inviteToken = getURLParameter('invite');
-            
+
             if (inviteToken) {
                 validateAndShowPasswordSetup(inviteToken);
             } else {
                 const hasSession = checkExistingSession();
                 if (!hasSession) showLoginPage();
             }
-            
+
             setupEventListeners();
         });
     </script>
