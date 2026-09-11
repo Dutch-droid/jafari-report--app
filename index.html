@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        /* ===== CSS Variables & Reset ===== */
         :root {
             --primary: #123b72;
             --primary-light: #1a5299;
@@ -37,7 +36,6 @@
             line-height: 1.6;
         }
 
-        /* ===== AUTH PAGES ===== */
         .auth-page {
             display: none;
             justify-content: center;
@@ -49,25 +47,18 @@
             top: 0; left: 0; right: 0; bottom: 0;
             z-index: 9999;
         }
-
         .auth-page.active { display: flex; }
-
         .auth-card {
-            background: white;
-            border-radius: 16px;
-            padding: 40px;
-            max-width: 460px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background: white; border-radius: 16px; padding: 40px;
+            max-width: 460px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-
         .auth-card .logo { text-align: center; margin-bottom: 30px; }
         .auth-card .logo img { height: 60px; width: auto; max-height: 60px; object-fit: contain; }
         .auth-card .logo h2 { color: var(--primary); font-size: 1.5rem; margin-top: 12px; font-weight: 700; }
         .auth-card .logo p { color: var(--gray-600); font-size: 0.9rem; margin-top: 4px; }
 
         .auth-form .form-group { margin-bottom: 18px; }
-        .auth-form label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: var(--gray-800); }
+        .auth-form label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; }
         .auth-form input {
             width: 100%; padding: 12px 16px; border: 2px solid var(--gray-200);
             border-radius: 8px; font-size: 1rem; transition: all 0.3s; background: white;
@@ -77,10 +68,10 @@
         .auth-btn {
             width: 100%; padding: 14px; background: var(--primary); color: white;
             border: none; border-radius: 8px; font-size: 1rem; font-weight: 700;
-            cursor: pointer; transition: all 0.3s; display: flex;
-            align-items: center; justify-content: center; gap: 10px;
+            cursor: pointer; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .auth-btn:hover:not(:disabled) { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(18,59,114,0.3); }
+        .auth-btn:hover:not(:disabled) { background: var(--primary-light); transform: translateY(-2px); }
         .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .auth-error {
@@ -89,24 +80,19 @@
             display: none; border: 1px solid #fca5a5;
         }
         .auth-error.show { display: block; }
-
         .auth-success {
             background: #f0fdf4; color: #065f46; padding: 10px 14px;
             border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px;
             display: none; border: 1px solid #86efac;
         }
         .auth-success.show { display: block; }
-
         .auth-info-box {
             background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px;
             padding: 12px 16px; margin-bottom: 20px; font-size: 0.85rem; color: #065f46;
         }
         .auth-info-box .email-display { font-weight: 700; color: var(--primary); word-break: break-all; }
 
-        .password-requirements {
-            background: var(--gray-50); border-radius: 8px; padding: 12px 16px;
-            margin-top: 8px; font-size: 0.8rem; color: var(--gray-600);
-        }
+        .password-requirements { background: var(--gray-50); border-radius: 8px; padding: 12px 16px; margin-top: 8px; font-size: 0.8rem; }
         .password-requirements .req { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
         .password-requirements .req.met { color: var(--success); }
         .password-requirements .req i.fa-check-circle { color: var(--success); }
@@ -115,11 +101,9 @@
         .auth-footer { text-align: center; margin-top: 20px; font-size: 0.75rem; color: var(--gray-600); }
         .auth-footer .admin-hint {
             margin-top: 12px; padding: 10px; background: #f0fdf4;
-            border-radius: 8px; border: 1px solid #86efac;
-            color: #065f46; font-size: 0.8rem;
+            border-radius: 8px; border: 1px solid #86efac; color: #065f46; font-size: 0.8rem;
         }
 
-        /* ===== MAIN APP ===== */
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         .app-container { display: none; }
         .app-container.active { display: block; }
@@ -129,18 +113,15 @@
             background: white; border-radius: 16px;
             box-shadow: var(--shadow); margin-bottom: 30px;
         }
-
         .logo { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
         .logo img { height: 56px; width: auto; object-fit: contain; }
         .logo h1 { font-size: 2rem; font-weight: 700; color: var(--primary); }
-        .subtitle { color: var(--gray-600); font-size: 1rem; }
 
         .user-info {
             display: flex; align-items: center; justify-content: flex-end;
             gap: 16px; margin-top: 10px; padding-top: 10px;
             border-top: 1px solid var(--gray-200); flex-wrap: wrap;
         }
-
         .user-info .user-badge {
             display: flex; align-items: center; gap: 10px;
             background: #f0fdf4; padding: 6px 16px;
@@ -160,73 +141,43 @@
         }
         .logout-btn { background: var(--danger); color: white; }
         .admin-panel-btn { background: var(--warning); color: var(--gray-800); font-weight: 600; }
-        .logout-btn:hover, .admin-panel-btn:hover { opacity: 0.8; transform: translateY(-1px); }
+        .logout-btn:hover, .admin-panel-btn:hover { opacity: 0.85; }
 
-        /* Main Grid */
-        .main-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-            gap: 30px;
-            margin-bottom: 30px;
-            align-items: start;
-        }
+        .main-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 30px; margin-bottom: 30px; align-items: start; }
         @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
 
-        .form-card, .progress-card, .admin-card {
-            background: white; border-radius: 16px;
-            padding: 25px; box-shadow: var(--shadow-lg);
+        .form-card, .progress-card, .admin-card, .preview-card {
+            background: white; border-radius: 16px; padding: 25px; box-shadow: var(--shadow-lg);
         }
+        .preview-card { min-height: 400px; }
 
-        .preview-card {
-            background: white; border-radius: 16px;
-            padding: 25px; box-shadow: var(--shadow-lg);
-            min-height: 400px; display: block;
-        }
-
-        .admin-card {
-            border: 2px solid var(--warning);
-            display: none; margin-bottom: 30px;
-        }
+        .admin-card { border: 2px solid var(--warning); display: none; margin-bottom: 30px; }
         .admin-card.active { display: block; }
 
         .card-header {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 20px; padding-bottom: 15px;
-            border-bottom: 2px solid var(--gray-100);
-            flex-wrap: wrap; gap: 10px;
+            border-bottom: 2px solid var(--gray-100); flex-wrap: wrap; gap: 10px;
         }
-        .card-header h2 {
-            font-size: 1.1rem; color: var(--primary);
-            display: flex; align-items: center; gap: 10px; margin: 0;
-        }
+        .card-header h2 { font-size: 1.1rem; color: var(--primary); display: flex; align-items: center; gap: 10px; margin: 0; }
 
         .report-form { max-height: 600px; overflow-y: auto; padding-right: 10px; }
         .report-form::-webkit-scrollbar { width: 6px; }
-        .report-form::-webkit-scrollbar-track { background: var(--gray-100); border-radius: 3px; }
         .report-form::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
 
-        .form-section {
-            margin-bottom: 24px; padding-bottom: 20px;
-            border-bottom: 1px solid var(--gray-200);
-        }
+        .form-section { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--gray-200); }
         .form-section:last-child { border-bottom: none; }
-
-        .form-section-title {
-            font-size: 0.95rem; font-weight: 700; color: var(--primary);
-            margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
-        }
+        .form-section-title { font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; }
         .form-group label .required { color: var(--danger); }
-
         .form-group input, .form-group select, .form-group textarea {
             width: 100%; padding: 8px 12px; border: 2px solid var(--gray-200);
             border-radius: 6px; font-size: 0.9rem; transition: all 0.3s; font-family: inherit;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none; border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(74,144,217,0.1);
+            outline: none; border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(74,144,217,0.1);
         }
         .form-group input[readonly] { background: var(--gray-50); color: var(--gray-600); }
 
@@ -238,89 +189,58 @@
             padding: 8px 12px; border-radius: 6px; font-size: 0.85rem;
             margin-bottom: 10px; border: 1px solid var(--gray-200);
         }
-
         .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
         .status-dot.connected { background: var(--success); }
         .status-dot.disconnected { background: var(--danger); }
         .status-dot.checking { background: var(--warning); animation: pulse 1s ease-in-out infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        .client-fetch-section {
-            background: var(--gray-50); padding: 16px;
-            border-radius: 8px; border: 2px dashed var(--gray-300); margin-bottom: 16px;
-        }
-
-        .customer-info-display {
-            background: white; border: 1px solid var(--gray-200);
-            border-radius: 6px; padding: 12px; margin-top: 10px;
-        }
-
+        .client-fetch-section { background: var(--gray-50); padding: 16px; border-radius: 8px; border: 2px dashed var(--gray-300); margin-bottom: 16px; }
+        .customer-info-display { background: white; border: 1px solid var(--gray-200); border-radius: 6px; padding: 12px; margin-top: 10px; }
         .customer-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px; }
         @media (max-width: 768px) { .customer-info-grid { grid-template-columns: 1fr; } }
-
-        .customer-info-grid .info-row {
-            display: flex; padding: 4px 0;
-            font-size: 0.85rem; border-bottom: 1px solid var(--gray-100);
-        }
+        .customer-info-grid .info-row { display: flex; padding: 4px 0; font-size: 0.85rem; border-bottom: 1px solid var(--gray-100); }
         .customer-info-grid .info-label { font-weight: 600; width: 140px; color: var(--gray-600); flex-shrink: 0; }
-        .customer-info-grid .info-value { color: var(--gray-800); word-break: break-word; }
         .customer-info-grid .info-value.highlight { color: var(--success); font-weight: 600; }
 
         .agent-info-grid {
             display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px;
-            margin-top: 8px; padding: 12px;
-            background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px;
+            margin-top: 8px; padding: 12px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px;
         }
         .agent-info-grid .agent-row { display: flex; padding: 4px 0; font-size: 0.85rem; }
         .agent-info-grid .agent-label { font-weight: 600; width: 100px; color: var(--gray-600); flex-shrink: 0; }
 
-        /* Signature Pad */
         .signature-pad-container {
             border: 2px solid var(--gray-200); border-radius: 8px;
             overflow: hidden; background: white; margin-top: 4px; position: relative;
         }
-        .signature-pad-container canvas {
-            display: block; width: 100%; height: 200px;
-            cursor: crosshair; touch-action: none;
-        }
+        .signature-pad-container canvas { display: block; width: 100%; height: 200px; cursor: crosshair; touch-action: none; }
         .signature-placeholder {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--gray-300); font-size: 0.9rem;
-            pointer-events: none; text-align: center;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: var(--gray-300); font-size: 0.9rem; pointer-events: none; text-align: center;
         }
-
         .signature-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
         .btn-signature {
             padding: 6px 14px; border: none; border-radius: 4px;
             font-size: 0.8rem; cursor: pointer;
             display: inline-flex; align-items: center; gap: 6px;
-            transition: all 0.2s;
         }
-        .btn-signature:hover { opacity: 0.85; transform: translateY(-1px); }
         .btn-signature.clear { background: var(--danger); color: white; }
         .btn-signature.undo { background: var(--gray-200); color: var(--gray-800); }
         .btn-signature.download { background: var(--secondary); color: white; }
-        .btn-signature:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
         .signature-status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; margin-top: 4px; }
         .signature-status .signed { color: var(--success); font-weight: 600; }
         .signature-status .not-signed { color: var(--danger); }
 
-        /* Signature confirmation checkboxes */
         .signature-confirmation {
             display: flex; align-items: flex-start; gap: 10px;
             padding: 10px 12px; margin-top: 10px;
             background: #eff6ff; border: 1px solid #93c5fd;
             border-radius: 6px; font-size: 0.85rem; cursor: pointer;
-            transition: all 0.2s;
         }
-        .signature-confirmation:hover { background: #dbeafe; }
         .signature-confirmation input[type="checkbox"] {
-            width: 18px; height: 18px; cursor: pointer;
-            margin-top: 2px; flex-shrink: 0; accent-color: var(--primary);
+            width: 18px; height: 18px; cursor: pointer; margin-top: 2px; flex-shrink: 0; accent-color: var(--primary);
         }
-        .signature-confirmation label { cursor: pointer; user-select: none; margin: 0; font-weight: 500; }
         .signature-confirmation.checked { background: #d1fae5; border-color: #6ee7b7; }
 
         .gps-status {
@@ -328,18 +248,15 @@
             padding: 8px 12px; background: #f0fdf4; border: 1px solid #86efac;
             border-radius: 6px; margin-top: 4px; font-size: 0.85rem; color: #166534;
         }
-
         .gps-info-box {
             display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-            margin-top: 8px; padding: 8px 12px;
-            background: #f8fafc; border-radius: 6px; border: 1px solid var(--gray-200);
+            margin-top: 8px; padding: 8px 12px; background: #f8fafc; border-radius: 6px; border: 1px solid var(--gray-200);
         }
         .gps-info-box .gps-label { font-weight: 600; font-size: 0.75rem; color: var(--gray-600); }
         .gps-info-box .gps-value { font-size: 0.85rem; font-family: monospace; }
 
         .map-container { margin-top: 8px; border-radius: 8px; overflow: hidden; border: 2px solid var(--gray-200); }
         #map { width: 100%; height: 350px; background: var(--gray-50); }
-
         .map-controls { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
         .btn-map {
             padding: 6px 12px; background: var(--primary); color: white;
@@ -349,11 +266,7 @@
         .btn-map.success { background: var(--success); }
         .btn-map.secondary { background: var(--gray-100); color: var(--gray-800); }
 
-        .location-info {
-            background: var(--gray-50); padding: 8px 12px;
-            border-radius: 4px; margin-top: 8px; font-size: 0.85rem;
-            border-left: 3px solid var(--secondary);
-        }
+        .location-info { background: var(--gray-50); padding: 8px 12px; border-radius: 4px; margin-top: 8px; font-size: 0.85rem; border-left: 3px solid var(--secondary); }
 
         .btn-fetch {
             padding: 8px 16px; background: var(--secondary); color: white;
@@ -366,31 +279,25 @@
         .input-with-button { display: flex; gap: 8px; }
         .input-with-button input { flex: 1; }
 
-        .btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-warning {
+        .btn-primary, .btn-secondary, .btn-success, .btn-danger {
             padding: 8px 16px; border: none; border-radius: 6px;
             font-weight: 600; cursor: pointer;
-            display: inline-flex; align-items: center;
-            gap: 6px; font-size: 0.9rem;
+            display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem;
         }
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: var(--gray-100); color: var(--gray-800); border: 2px solid var(--gray-200); }
         .btn-success { background: var(--success); color: white; }
         .btn-danger { background: var(--danger); color: white; }
-        .btn-warning { background: var(--warning); color: var(--gray-800); }
 
-        .form-actions {
-            display: flex; gap: 10px; margin-top: 20px;
-            padding-top: 20px; border-top: 2px solid var(--gray-100); flex-wrap: wrap;
-        }
+        .form-actions { display: flex; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--gray-100); flex-wrap: wrap; }
 
         .auto-filled { background: #ecfdf5 !important; border-color: #34d399 !important; }
         .gps-filled { background: #eff6ff !important; border-color: #3b82f6 !important; }
         .date-auto-filled { background: #fef3c7 !important; border-color: #fcd34d !important; }
 
         .fetch-success {
-            background: #ecfdf5; border: 1px solid #34d399;
-            border-radius: 6px; padding: 8px 12px; margin-top: 8px;
-            color: #065f46; font-size: 0.85rem; display: none;
+            background: #ecfdf5; border: 1px solid #34d399; border-radius: 6px;
+            padding: 8px 12px; margin-top: 8px; color: #065f46; font-size: 0.85rem; display: none;
         }
         .fetch-success.show { display: block; }
 
@@ -410,10 +317,7 @@
         .toast.info { background: var(--secondary); }
         .toast.warning { background: var(--warning); color: var(--gray-800); }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .loading-spinner {
@@ -429,11 +333,9 @@
             display: flex; justify-content: space-between;
             align-items: center; flex-wrap: wrap; gap: 10px;
         }
-        .preview-info { flex: 1; }
         .preview-name { font-weight: 600; font-size: 0.95rem; }
         .preview-meta { font-size: 0.8rem; color: var(--gray-600); }
         .preview-actions { display: flex; gap: 6px; }
-
         .download-btn { background: var(--secondary); color: white; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-size: 0.8rem; }
         .remove-btn { background: var(--danger); color: white; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-size: 0.8rem; }
 
@@ -442,7 +344,6 @@
 
         .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-600); }
         .empty-state i { font-size: 3rem; color: var(--gray-300); margin-bottom: 12px; display: block; }
-        .empty-state p { margin: 8px 0; font-size: 0.95rem; }
 
         .footer { text-align: center; color: var(--gray-600); padding: 20px 0; font-size: 0.85rem; }
 
@@ -460,7 +361,23 @@
             border-radius: 50%; animation: spin 0.8s ease-in-out infinite;
         }
 
-        /* Admin Panel */
+        /* ===== Admin Panel ===== */
+        .admin-tabs {
+            display: flex; gap: 6px;
+            border-bottom: 2px solid var(--gray-100);
+            margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .admin-tab {
+            padding: 10px 18px; background: none; border: none;
+            border-bottom: 3px solid transparent; cursor: pointer;
+            font-weight: 600; font-size: 0.9rem; color: var(--gray-600);
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .admin-tab:hover { color: var(--primary); background: var(--gray-50); }
+        .admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .admin-tab-content { display: none; }
+        .admin-tab-content.active { display: block; }
+
         .admin-user-list { max-height: 400px; overflow-y: auto; }
         .admin-user-item {
             display: flex; justify-content: space-between; align-items: center;
@@ -470,9 +387,8 @@
         .admin-user-item .user-email { font-weight: 600; word-break: break-all; }
         .admin-user-item .user-name { color: var(--gray-600); font-size: 0.9rem; }
         .admin-user-item .user-role {
-            font-size: 0.7rem; padding: 2px 10px;
-            border-radius: 12px; background: var(--gray-200);
-            display: inline-block; margin-top: 4px;
+            font-size: 0.7rem; padding: 2px 10px; border-radius: 12px;
+            background: var(--gray-200); display: inline-block; margin-top: 4px;
         }
         .admin-user-item .user-role.admin-role { background: #fef3c7; color: #92400e; }
         .admin-user-item .user-role.pending-role { background: #dbeafe; color: #1e40af; }
@@ -490,14 +406,10 @@
         .admin-user-actions .resend-btn { color: var(--secondary); border-color: #93c5fd; }
         .admin-user-actions .toggle-btn { color: var(--warning); border-color: #fcd34d; }
 
-        .admin-add-form {
-            display: flex; gap: 10px;
-            margin-bottom: 16px; flex-wrap: wrap;
-        }
+        .admin-add-form { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
         .admin-add-form input, .admin-add-form select {
             padding: 8px 12px; border: 2px solid var(--gray-200);
-            border-radius: 6px; font-size: 0.9rem;
-            flex: 1; min-width: 150px;
+            border-radius: 6px; font-size: 0.9rem; flex: 1; min-width: 150px;
         }
         .admin-add-form .btn-add {
             padding: 8px 20px; background: var(--success); color: white;
@@ -513,8 +425,8 @@
 
         .invitation-link-box {
             background: #fffbeb; border: 1px solid #fcd34d;
-            border-radius: 6px; padding: 12px;
-            margin-top: 12px; font-size: 0.85rem; display: none;
+            border-radius: 6px; padding: 12px; margin-top: 12px;
+            font-size: 0.85rem; display: none;
         }
         .invitation-link-box.show { display: block; }
         .invitation-link-box .link {
@@ -526,13 +438,61 @@
         .invitation-link-box .copy-btn {
             margin-top: 8px; padding: 6px 12px;
             background: var(--primary); color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;
+        }
+
+        /* ===== Audit Log ===== */
+        .audit-filters {
+            display: flex; gap: 8px; margin-bottom: 16px;
+            flex-wrap: wrap; align-items: center;
+        }
+        .audit-filters input {
+            padding: 8px 12px; border: 2px solid var(--gray-200);
+            border-radius: 6px; font-size: 0.85rem; flex: 1; min-width: 130px;
+        }
+        .audit-filters input:focus { outline: none; border-color: var(--secondary); }
+        .audit-filters button { white-space: nowrap; padding: 8px 14px; font-size: 0.85rem; }
+
+        .audit-stats { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+        .audit-stats .stat {
+            background: var(--gray-50); padding: 10px 16px;
+            border-radius: 8px; font-size: 0.85rem;
+            border-left: 3px solid var(--secondary);
+        }
+        .audit-stats .stat strong { color: var(--primary); font-size: 1rem; }
+
+        .audit-table-container {
+            max-height: 500px; overflow-y: auto;
+            border: 1px solid var(--gray-200); border-radius: 8px;
+        }
+        .audit-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .audit-table thead { position: sticky; top: 0; background: var(--gray-100); z-index: 1; }
+        .audit-table th {
+            padding: 10px 12px; text-align: left;
+            font-weight: 700; color: var(--primary);
+            border-bottom: 2px solid var(--gray-300); white-space: nowrap;
+        }
+        .audit-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--gray-100); vertical-align: middle;
+        }
+        .audit-table tr:hover { background: var(--gray-50); }
+        .audit-table .badge {
+            display: inline-block; padding: 2px 8px; border-radius: 4px;
+            font-size: 0.7rem; font-weight: 600; margin-right: 4px;
+        }
+        .audit-table .badge.sig { background: #dbeafe; color: #1e40af; }
+        .audit-table .badge.gps { background: #eff6ff; color: #1e40af; }
+        .audit-table .badge.verified { background: #d1fae5; color: #065f46; }
+        .audit-table .delete-entry-btn {
+            background: var(--danger); color: white;
             border: none; border-radius: 4px;
-            cursor: pointer; font-size: 0.8rem;
+            padding: 4px 8px; cursor: pointer; font-size: 0.75rem;
         }
 
         .gps-badge, .signature-badge {
-            display: inline-block; padding: 2px 8px;
-            border-radius: 4px; font-size: 0.7rem; font-weight: 600;
+            display: inline-block; padding: 2px 8px; border-radius: 4px;
+            font-size: 0.7rem; font-weight: 600;
         }
         .gps-badge { background: #eff6ff; color: #1e40af; }
         .signature-badge { background: #dbeafe; color: #1e40af; }
@@ -547,7 +507,6 @@
 </head>
 <body>
 
-    <!-- ===== LOADING OVERLAY ===== -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
         <p>Loading...</p>
@@ -561,45 +520,31 @@
                 <h2>Welcome to Jafari Credit</h2>
                 <p>Set up your account password</p>
             </div>
-
             <div class="auth-info-box">
                 <i class="fas fa-info-circle"></i>
                 Your login email: <span class="email-display" id="setupEmail">loading...</span>
-                <br>
-                <small>You'll use this email address to log in.</small>
+                <br><small>You'll use this email address to log in.</small>
             </div>
-            
-            <div class="auth-error" id="setupError">
-                <i class="fas fa-exclamation-circle"></i>
-                <span id="setupErrorMessage"></span>
-            </div>
-
-            <div class="auth-success" id="setupSuccess">
-                <i class="fas fa-check-circle"></i>
-                <span id="setupSuccessMessage"></span>
-            </div>
-
+            <div class="auth-error" id="setupError"><i class="fas fa-exclamation-circle"></i> <span id="setupErrorMessage"></span></div>
+            <div class="auth-success" id="setupSuccess"><i class="fas fa-check-circle"></i> <span id="setupSuccessMessage"></span></div>
             <form class="auth-form" id="setupPasswordForm">
                 <div class="form-group">
                     <label for="setupPassword">Create Your Password</label>
-                    <input type="password" id="setupPassword" placeholder="Enter a strong password" required minlength="6" autocomplete="new-password">
+                    <input type="password" id="setupPassword" placeholder="Enter a strong password" required minlength="6">
                 </div>
                 <div class="form-group">
                     <label for="setupConfirmPassword">Confirm Password</label>
-                    <input type="password" id="setupConfirmPassword" placeholder="Re-enter your password" required minlength="6" autocomplete="new-password">
+                    <input type="password" id="setupConfirmPassword" placeholder="Re-enter your password" required minlength="6">
                 </div>
-
                 <div class="password-requirements">
                     <div style="font-weight:600;margin-bottom:6px;">Password Requirements:</div>
                     <div class="req" id="reqLength"><i class="fas fa-circle"></i> At least 6 characters</div>
                     <div class="req" id="reqMatch"><i class="fas fa-circle"></i> Passwords match</div>
                 </div>
-
                 <button type="submit" class="auth-btn" id="setupPasswordBtn" style="margin-top:16px;">
                     <i class="fas fa-key"></i> Set Password & Continue
                 </button>
             </form>
-
             <div class="auth-footer">
                 <p>Already have a password? <a href="#" id="goToLoginLink" style="color:var(--primary);font-weight:600;">Sign in here</a></p>
             </div>
@@ -614,24 +559,17 @@
                 <h2>Customer Meeting Report</h2>
                 <p>Sign in with your email and password</p>
             </div>
-            
-            <div class="auth-error" id="loginError">
-                <i class="fas fa-exclamation-circle"></i>
-                <span id="loginErrorMessage">Invalid credentials. Please try again.</span>
-            </div>
-
+            <div class="auth-error" id="loginError"><i class="fas fa-exclamation-circle"></i> <span id="loginErrorMessage">Invalid credentials.</span></div>
             <form class="auth-form" id="loginForm">
                 <div class="form-group">
                     <label for="loginEmail">Email Address</label>
-                    <input type="email" id="loginEmail" placeholder="Enter your email" required autocomplete="email">
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
                 </div>
                 <div class="form-group">
                     <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" placeholder="Enter your password" required autocomplete="current-password">
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
                 </div>
-                <button type="submit" class="auth-btn" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i> Sign In
-                </button>
+                <button type="submit" class="auth-btn" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
             </form>
             <div class="auth-footer">
                 <p>Secure authentication</p>
@@ -646,7 +584,6 @@
     <!-- ===== MAIN APP ===== -->
     <div class="app-container" id="appContainer">
         <div class="container">
-            <!-- Header -->
             <header class="header">
                 <div class="logo">
                     <img src="https://jafaricredit.co.ke/wp-content/themes/jafari-website-theme/assets/darklogo.webp" alt="Jafari Credit Logo">
@@ -662,44 +599,90 @@
                         <i class="fas fa-users-cog"></i> Admin Panel
                     </button>
                     <button class="logout-btn" id="logoutBtn">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
+                        <i class="fas fa-sign-out-alt"></i> Logout                    </button>
                 </div>
             </header>
 
             <!-- Admin Panel -->
             <div class="admin-card" id="adminPanel">
                 <div class="card-header">
-                    <h2><i class="fas fa-users-cog"></i> Admin Panel - User Management</h2>
+                    <h2><i class="fas fa-users-cog"></i> Admin Panel</h2>
                     <button class="btn-secondary" id="closeAdminPanel"><i class="fas fa-times"></i> Close</button>
                 </div>
-                
-                <div class="admin-stats">
-                    <div class="stat">👥 <strong id="totalUsers">0</strong> Users</div>
-                    <div class="stat">👤 <strong id="adminUsers">0</strong> Admins</div>
-                    <div class="stat">⏳ <strong id="pendingUsers">0</strong> Pending</div>
+
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="users"><i class="fas fa-users"></i> User Management</button>
+                    <button class="admin-tab" data-tab="audit"><i class="fas fa-history"></i> Report Audit Log</button>
                 </div>
 
-                <div class="admin-add-form">
-                    <input type="email" id="addUserEmail" placeholder="Enter user email">
-                    <input type="text" id="addUserName" placeholder="Full name (optional)">
-                    <select id="addUserRole">
-                        <option value="user">User</option>
-                        <option value="manager">Manager</option>
-                        <option value="viewer">Viewer</option>
-                    </select>
-                    <button class="btn-add" id="addUserBtn"><i class="fas fa-paper-plane"></i> Send Invitation</button>
+                <!-- Tab 1: Users -->
+                <div class="admin-tab-content active" id="tab-users">
+                    <div class="admin-stats">
+                        <div class="stat">👥 <strong id="totalUsers">0</strong> Users</div>
+                        <div class="stat">👤 <strong id="adminUsers">0</strong> Admins</div>
+                        <div class="stat">⏳ <strong id="pendingUsers">0</strong> Pending</div>
+                    </div>
+
+                    <div class="admin-add-form">
+                        <input type="email" id="addUserEmail" placeholder="Enter user email">
+                        <input type="text" id="addUserName" placeholder="Full name (optional)">
+                        <select id="addUserRole">
+                            <option value="user">User</option>
+                            <option value="manager">Manager</option>
+                            <option value="viewer">Viewer</option>
+                        </select>
+                        <button class="btn-add" id="addUserBtn"><i class="fas fa-paper-plane"></i> Send Invitation</button>
+                    </div>
+
+                    <div class="invitation-link-box" id="invitationLinkBox">
+                        <strong>⚠️ Invitation Link:</strong>
+                        <p style="font-size:0.8rem;margin-top:4px;">Share this link with the user:</p>
+                        <div class="link" id="invitationLink"></div>
+                        <button class="copy-btn" id="copyInvitationLink"><i class="fas fa-copy"></i> Copy Link</button>
+                    </div>
+
+                    <div class="admin-user-list" id="userList">
+                        <div class="empty-state"><i class="fas fa-users"></i><p>No users found</p></div>
+                    </div>
                 </div>
 
-                <div class="invitation-link-box" id="invitationLinkBox">
-                    <strong>⚠️ Invitation Link (Dev Mode):</strong>
-                    <p style="font-size:0.8rem;margin-top:4px;">Share this link with the user to set up their password:</p>
-                    <div class="link" id="invitationLink"></div>
-                    <button class="copy-btn" id="copyInvitationLink"><i class="fas fa-copy"></i> Copy Link</button>
-                </div>
+                <!-- Tab 2: Audit Log -->
+                <div class="admin-tab-content" id="tab-audit">
+                    <div class="audit-filters">
+                        <input type="date" id="auditStartDate" title="Start date">
+                        <input type="date" id="auditEndDate" title="End date">
+                        <input type="text" id="auditUserSearch" placeholder="Filter by officer email">
+                        <input type="text" id="auditCustomerSearch" placeholder="Search customer / report ID">
+                        <button class="btn-primary" id="auditApplyFilters"><i class="fas fa-filter"></i> Filter</button>
+                        <button class="btn-secondary" id="auditClearFilters"><i class="fas fa-times"></i> Clear</button>
+                        <button class="btn-success" id="auditExportCsv"><i class="fas fa-download"></i> Export CSV</button>
+                    </div>
 
-                <div class="admin-user-list" id="userList">
-                    <div class="empty-state"><i class="fas fa-users"></i><p>No users found</p></div>
+                    <div class="audit-stats" id="auditStats">
+                        <div class="stat">📄 <strong id="auditTotal">0</strong> Reports</div>
+                        <div class="stat">👤 <strong id="auditUsers">0</strong> Officers</div>
+                        <div class="stat">💰 KES <strong id="auditTotalAmount">0</strong> Total Loans</div>
+                    </div>
+
+                    <div class="audit-table-container">
+                        <table class="audit-table">
+                            <thead>
+                                <tr>
+                                    <th>Date &amp; Time</th>
+                                    <th>Officer</th>
+                                    <th>Customer</th>
+                                    <th>Loan</th>
+                                    <th>Branch</th>
+                                    <th>Report ID</th>
+                                    <th>Signatures</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditTableBody">
+                                <tr><td colspan="8" style="text-align:center;padding:30px;">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -710,7 +693,7 @@
                         <h2><i class="fas fa-edit"></i> Meeting Report Form</h2>
                         <span style="font-size:0.8rem;color:var(--gray-600);"><i class="fas fa-info-circle"></i> GPS-enhanced</span>
                     </div>
-                    
+
                     <form id="reportForm" class="report-form">
                         <div id="connectionStatus" class="connection-status">
                             <span class="status-dot checking" id="statusDot"></span>
@@ -774,17 +757,13 @@
                             <input type="hidden" id="agent_email" value="">
 
                             <div id="fetchSuccess" class="fetch-success">
-                                <i class="fas fa-check-circle"></i>
-                                <span id="fetchSuccessMessage">Agent data loaded successfully!</span>
+                                <i class="fas fa-check-circle"></i> <span id="fetchSuccessMessage">Agent loaded!</span>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="meeting_date">Meeting Date <span class="required">*</span></label>
-                                    <input type="date" id="meeting_date" required readonly class="date-auto-filled" title="Auto-filled with today's date">
-                                    <span style="font-size:0.7rem;color:var(--gray-600);margin-top:3px;display:block;">
-                                        <i class="fas fa-lock"></i> Auto-captured (today's date)
-                                    </span>
+                                    <input type="date" id="meeting_date" required readonly class="date-auto-filled">
                                 </div>
                                 <div class="form-group">
                                     <label for="meeting_time">Meeting Time <span class="required">*</span></label>
@@ -809,7 +788,7 @@
                                         <option value="kakamega">Kakamega-Shivcom Building 2nd Floor Room FB</option>
                                         <option value="machakos">Machakos-Elice Center Ground Floor</option>
                                         <option value="garissa">Garissa-Maalim House Next to KCB</option>
-                                        <option value="Isiolo">Isiolo-Ibada Plaza Office C3</option>
+                                        <option value="isiolo">Isiolo-Ibada Plaza Office C3</option>
                                         <option value="bomet">Bomet-Kosal Plaza 2nd Floor Room 28</option>
                                         <option value="embu">Embu-Housing finance 4th Floor</option>
                                         <option value="homabay">HomaBay-Glory Building 1st Floor</option>
@@ -825,7 +804,7 @@
                             </div>
                         </div>
 
-                        <!-- Customer Fetch Section -->
+                        <!-- Customer Fetch -->
                         <div class="form-section">
                             <div class="form-section-title"><i class="fas fa-user-search"></i> Fetch Customer from Dynamics NAV</div>
                             <div class="client-fetch-section">
@@ -849,7 +828,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Customer Info Display (fetched from NAV) -->
                                 <div id="customerInfoDisplay" class="customer-info-display" style="display:none;">
                                     <div class="customer-info-grid">
                                         <div class="info-row"><span class="info-label">👤 Name:</span><span class="info-value highlight" id="custNameDisplay">-</span></div>
@@ -862,13 +840,12 @@
                                         <div class="info-row"><span class="info-label">📍 State:</span><span class="info-value" id="custStateDisplay">-</span></div>
                                         <div class="info-row"><span class="info-label">📱 Mobile Phone:</span><span class="info-value" id="custPhoneDisplay">-</span></div>
                                         <div class="info-row"><span class="info-label">🏠 Address:</span><span class="info-value" id="custAddressDisplay">-</span></div>
-                                        <div class="info-row" style="grid-column:1/-1;"><span class="info-label">📅 Last Modified:</span><span class="info-value" id="custModifiedDisplay">-</span></div>
-                                        <div class="info-row" style="grid-column:1/-1;"><span class="info-label">🔗 Fetched Via:</span><span class="info-value" id="custFetchMethod">-</span></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Map -->
                         <div class="form-section">
                             <div class="form-section-title"><i class="fas fa-map-marker-alt"></i> Map Location</div>
                             <div class="form-group">
@@ -878,27 +855,28 @@
                                     <button type="button" id="searchLocationBtn" class="btn-map"><i class="fas fa-search"></i> Search</button>
                                     <button type="button" id="clearLocationBtn" class="btn-map secondary"><i class="fas fa-times"></i> Clear</button>
                                 </div>
-                                <div class="location-info" id="locationInfo"><strong>📍 Current Location:</strong> <span class="coord-value" id="coordDisplay">No location set</span></div>
+                                <div class="location-info" id="locationInfo"><strong>📍 Current Location:</strong> <span id="coordDisplay">No location set</span></div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group"><label for="gps_locator">GPS Location</label><input type="text" id="gps_locator" placeholder="Latitude, Longitude" readonly></div>
-                                <div class="form-group"><label for="gps_accuracy">GPS Accuracy (m)</label><input type="number" id="gps_accuracy" placeholder="0" readonly></div>
+                                <div class="form-group"><label for="gps_locator">GPS Location</label><input type="text" id="gps_locator" readonly></div>
+                                <div class="form-group"><label for="gps_accuracy">GPS Accuracy (m)</label><input type="number" id="gps_accuracy" readonly></div>
                             </div>
                         </div>
 
+                        <!-- Customer Info -->
                         <div class="form-section">
                             <div class="form-section-title"><i class="fas fa-user"></i> Customer Information</div>
                             <div class="form-group">
                                 <label for="customer_name">Customer Full Name <span class="required">*</span></label>
-                                <input type="text" id="customer_name" required placeholder="Enter customer name">
+                                <input type="text" id="customer_name" required>
                             </div>
                             <div class="form-row">
-                                <div class="form-group"><label for="customer_id">Customer ID</label><input type="text" id="customer_id" placeholder="Customer ID"></div>
-                                <div class="form-group"><label for="customer_phone">Customer Phone</label><input type="tel" id="customer_phone" placeholder="+254 700 000000"></div>
+                                <div class="form-group"><label for="customer_id">Customer ID</label><input type="text" id="customer_id"></div>
+                                <div class="form-group"><label for="customer_phone">Customer Phone</label><input type="tel" id="customer_phone"></div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group"><label for="customer_email">Customer Email</label><input type="email" id="customer_email" placeholder="customer@email.com"></div>
-                                <div class="form-group"><label for="customer_address">Customer Address</label><input type="text" id="customer_address" placeholder="Customer address"></div>
+                                <div class="form-group"><label for="customer_email">Customer Email</label><input type="email" id="customer_email"></div>
+                                <div class="form-group"><label for="customer_address">Customer Address</label><input type="text" id="customer_address"></div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
@@ -916,7 +894,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="loan_amount">Loan Amount (KES) <span class="required">*</span></label>
-                                    <input type="number" id="loan_amount" required placeholder="Enter loan amount" min="0" step="100">
+                                    <input type="number" id="loan_amount" required min="0" step="100">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -929,6 +907,7 @@
                             </div>
                         </div>
 
+                        <!-- KYC -->
                         <div class="form-section">
                             <div class="form-section-title"><i class="fas fa-id-card"></i> KYC Status & Verification</div>
                             <div class="form-group">
@@ -942,7 +921,15 @@
                                 </select>
                             </div>
                             <div class="form-row">
-                                <div class="form-group"><label for="kyc_id_type">ID Type</label><select id="kyc_id_type"><option value="">Select ID type...</option><option value="national_id">National ID</option><option value="passport">Passport</option><option value="drivers_license">Driver's License</option></select></div>
+                                <div class="form-group">
+                                    <label for="kyc_id_type">ID Type</label>
+                                    <select id="kyc_id_type">
+                                        <option value="">Select...</option>
+                                        <option value="national_id">National ID</option>
+                                        <option value="passport">Passport</option>
+                                        <option value="drivers_license">Driver's License</option>
+                                    </select>
+                                </div>
                                 <div class="form-group"><label for="kyc_date_verified">Date Verified</label><input type="date" id="kyc_date_verified"></div>
                             </div>
                             <div class="form-group">
@@ -951,19 +938,18 @@
                             </div>
                             <div class="form-group">
                                 <label for="kyc_notes">KYC Notes</label>
-                                <textarea id="kyc_notes" placeholder="Additional KYC verification notes..." rows="2"></textarea>
+                                <textarea id="kyc_notes" rows="2"></textarea>
                             </div>
                         </div>
 
+                        <!-- Discussion & Signatures -->
                         <div class="form-section">
                             <div class="form-section-title"><i class="fas fa-comments"></i> Discussion & Sign-off</div>
                             <div class="form-group">
                                 <label for="discussion_summary">Summary of Discussion <span class="required">*</span></label>
-                                <textarea id="discussion_summary" required placeholder="Enter detailed discussion summary" rows="4"></textarea>
+                                <textarea id="discussion_summary" required rows="4"></textarea>
                             </div>
-                            
                             <div class="form-row">
-                                <!-- Team Leader Signature -->
                                 <div class="form-group">
                                     <label>Team Leader Signature</label>
                                     <div class="signature-pad-container">
@@ -976,17 +962,11 @@
                                         <button type="button" class="btn-signature download" id="downloadTeamLeaderSignature"><i class="fas fa-download"></i> Download</button>
                                     </div>
                                     <div class="signature-status" id="teamLeaderSignatureStatus"><span class="not-signed">✗ Not signed</span></div>
-                                    
-                                    <!-- Team Leader Confirmation Checkbox -->
                                     <div class="signature-confirmation" id="teamLeaderConfirmBox">
                                         <input type="checkbox" id="teamLeaderConfirm">
-                                        <label for="teamLeaderConfirm">
-                                            I confirm that the <strong>Team Leader</strong> has signed this report
-                                        </label>
+                                        <label for="teamLeaderConfirm">I confirm that the <strong>Team Leader</strong> has signed</label>
                                     </div>
                                 </div>
-                                
-                                <!-- Agent Signature -->
                                 <div class="form-group">
                                     <label>Agent Signature</label>
                                     <div class="signature-pad-container">
@@ -999,13 +979,9 @@
                                         <button type="button" class="btn-signature download" id="downloadAgentSignature"><i class="fas fa-download"></i> Download</button>
                                     </div>
                                     <div class="signature-status" id="agentSignatureStatus"><span class="not-signed">✗ Not signed</span></div>
-                                    
-                                    <!-- Agent Confirmation Checkbox -->
                                     <div class="signature-confirmation" id="agentConfirmBox">
                                         <input type="checkbox" id="agentConfirm">
-                                        <label for="agentConfirm">
-                                            I confirm that the <strong>Sales Agent</strong> has signed this report
-                                        </label>
+                                        <label for="agentConfirm">I confirm that the <strong>Sales Agent</strong> has signed</label>
                                     </div>
                                 </div>
                             </div>
@@ -1020,17 +996,13 @@
                     </form>
                 </div>
 
-                <!-- Preview Panel -->
                 <div class="preview-card">
                     <div class="card-header">
                         <h2><i class="fas fa-eye"></i> Preview & Downloads</h2>
                         <div><span id="previewCount" class="preview-count">0 reports</span></div>
                     </div>
                     <div id="previewContent">
-                        <div class="empty-state">
-                            <i class="fas fa-file-alt"></i>
-                            <p>Fill in the form and click "Generate PDF"</p>
-                        </div>
+                        <div class="empty-state"><i class="fas fa-file-alt"></i><p>Fill in the form and click "Generate PDF"</p></div>
                     </div>
                 </div>
             </div>
@@ -1053,7 +1025,7 @@
         // ============================================================
         // CONFIGURATION
         // ============================================================
-const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare.com/api'; // Update this to your backend API URL                                                  
+        const API_BASE_URL = 'https://latina-arrival-host-pat.trycloudflare.com/api';
 
         const state = {
             reports: [],
@@ -1072,11 +1044,7 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
             invitationToken: null
         };
 
-        function getElement(id) {
-            const el = document.getElementById(id);
-            if (!el) console.warn(`⚠️ Element "${id}" not found`);
-            return el;
-        }
+        function getElement(id) { return document.getElementById(id); }
 
         function showLoading(message = 'Loading...') {
             const overlay = getElement('loadingOverlay');
@@ -1097,27 +1065,18 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
             document.body.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s';
                 setTimeout(() => toast.remove(), 300);
             }, 4000);
         }
 
-        // ============================================================
-        // DATE HELPERS
-        // ============================================================
         function getTodayDateString() {
             const now = new Date();
-            const y = now.getFullYear();
-            const m = String(now.getMonth() + 1).padStart(2, '0');
-            const d = String(now.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
         }
 
         function getCurrentTimeString() {
             const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            return `${h}:${m}`;
+            return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
         }
 
         function updateMeetingDatetime() {
@@ -1138,22 +1097,17 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
         }
 
         // ============================================================
-        // API FETCH HELPER - with ngrok bypass header
+        // API FETCH HELPER
         // ============================================================
         async function apiFetch(url, options = {}) {
             const token = localStorage.getItem('jafari_token');
             const headers = {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
-
+                'Accept': 'application/json'
             };
             if (token) headers['Authorization'] = `Bearer ${token}`;
 
-            const mergedOptions = {
-                ...options,
-                headers: { ...headers, ...(options.headers || {}) }
-            };
-
+            const mergedOptions = { ...options, headers: { ...headers, ...(options.headers || {}) } };
             const response = await fetch(url, mergedOptions);
 
             if (response.status === 401 && !url.includes('/auth/login') && !url.includes('/auth/validate-invitation') && !url.includes('/auth/setup-password')) {
@@ -1162,20 +1116,14 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 showToast('Session expired. Please login again.', 'error');
                 setTimeout(() => window.location.reload(), 2000);
             }
-
             return response;
         }
 
-        function getURLParameter(name) {
-            return new URLSearchParams(window.location.search).get(name);
-        }
-
-        function clearURLParameters() {
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
+        function getURLParameter(name) { return new URLSearchParams(window.location.search).get(name); }
+        function clearURLParameters() { window.history.replaceState({}, document.title, window.location.pathname); }
 
         // ============================================================
-        // PASSWORD SETUP FUNCTIONS
+        // PASSWORD SETUP
         // ============================================================
         async function validateAndShowPasswordSetup(token) {
             try {
@@ -1200,7 +1148,6 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 return true;
             } catch (error) {
                 hideLoading();
-                console.error('Error validating invitation:', error);
                 showToast('Error validating invitation link', 'error');
                 showLoginPage();
                 return false;
@@ -1220,7 +1167,6 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
             function updateRequirements() {
                 const password = passwordInput?.value || '';
                 const confirm = confirmInput?.value || '';
-
                 const reqLength = getElement('reqLength');
                 const reqMatch = getElement('reqMatch');
 
@@ -1247,7 +1193,6 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
 
         async function handleSetupPassword(e) {
             e.preventDefault();
-
             const password = getElement('setupPassword')?.value;
             const confirmPassword = getElement('setupConfirmPassword')?.value;
             const errorDiv = getElement('setupError');
@@ -1260,41 +1205,25 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
             if (successDiv) successDiv.classList.remove('show');
 
             if (password !== confirmPassword) {
-                if (errorDiv) {
-                    errorDiv.classList.add('show');
-                    if (errorMsg) errorMsg.textContent = 'Passwords do not match';
-                }
+                if (errorDiv) { errorDiv.classList.add('show'); if (errorMsg) errorMsg.textContent = 'Passwords do not match'; }
                 return;
             }
             if (password.length < 6) {
-                if (errorDiv) {
-                    errorDiv.classList.add('show');
-                    if (errorMsg) errorMsg.textContent = 'Password must be at least 6 characters';
-                }
+                if (errorDiv) { errorDiv.classList.add('show'); if (errorMsg) errorMsg.textContent = 'Password must be at least 6 characters'; }
                 return;
             }
 
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<span class="loading-spinner"></span> Setting password...';
-            }
+            if (btn) { btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Setting password...'; }
 
             try {
                 const response = await apiFetch(`${API_BASE_URL}/auth/setup-password`, {
                     method: 'POST',
-                    body: JSON.stringify({
-                        token: state.invitationToken,
-                        password: password,
-                        confirm_password: confirmPassword
-                    })
+                    body: JSON.stringify({ token: state.invitationToken, password, confirm_password: confirmPassword })
                 });
                 const result = await response.json();
 
                 if (result.success) {
-                    if (successDiv) {
-                        successDiv.classList.add('show');
-                        if (successMsg) successMsg.textContent = 'Password set successfully! Redirecting to login...';
-                    }
+                    if (successDiv) { successDiv.classList.add('show'); if (successMsg) successMsg.textContent = 'Password set successfully! Redirecting...'; }
                     setTimeout(() => {
                         state.invitationToken = null;
                         clearURLParameters();
@@ -1307,31 +1236,20 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                         }
                     }, 2000);
                 } else {
-                    if (errorDiv) {
-                        errorDiv.classList.add('show');
-                        if (errorMsg) errorMsg.textContent = result.error || 'Failed to set password';
-                    }
+                    if (errorDiv) { errorDiv.classList.add('show'); if (errorMsg) errorMsg.textContent = result.error || 'Failed to set password'; }
                 }
             } catch (error) {
-                console.error('Error setting password:', error);
-                if (errorDiv) {
-                    errorDiv.classList.add('show');
-                    if (errorMsg) errorMsg.textContent = 'Connection error. Please try again.';
-                }
+                if (errorDiv) { errorDiv.classList.add('show'); if (errorMsg) errorMsg.textContent = 'Connection error. Please try again.'; }
             } finally {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-key"></i> Set Password & Continue';
-                }
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Set Password & Continue'; }
             }
         }
 
         // ============================================================
-        // LOGIN FUNCTIONS
+        // LOGIN
         // ============================================================
         async function handleLogin(e) {
             e.preventDefault();
-
             const email = getElement('loginEmail')?.value.trim().toLowerCase();
             const password = getElement('loginPassword')?.value.trim();
             const errorDiv = getElement('loginError');
@@ -1339,17 +1257,11 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
             const loginBtn = getElement('loginBtn');
 
             if (!email || !password) {
-                if (errorDiv) {
-                    errorDiv.classList.add('show');
-                    if (errorMsg) errorMsg.textContent = 'Please enter both email and password.';
-                }
+                if (errorDiv) { errorDiv.classList.add('show'); if (errorMsg) errorMsg.textContent = 'Please enter both email and password.'; }
                 return;
             }
 
-            if (loginBtn) {
-                loginBtn.disabled = true;
-                loginBtn.innerHTML = '<span class="loading-spinner"></span> Signing in...';
-            }
+            if (loginBtn) { loginBtn.disabled = true; loginBtn.innerHTML = '<span class="loading-spinner"></span> Signing in...'; }
             if (errorDiv) errorDiv.classList.remove('show');
 
             try {
@@ -1364,32 +1276,20 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 if (result.success) {
                     localStorage.setItem('jafari_token', result.token);
                     localStorage.setItem('jafari_user', JSON.stringify(result.user));
-
                     state.isAuthenticated = true;
                     state.user = result.user;
                     state.isAdmin = result.user.is_admin || false;
-
                     showApp(result.user);
                     showToast(`Welcome ${result.user.name || result.user.email}!`, 'success');
                     setTimeout(checkDynamicsConnection, 500);
                 } else {
-                    if (errorDiv) {
-                        errorDiv.classList.add('show');
-                        if (errorMsg) errorMsg.textContent = result.error || 'Invalid credentials';
-                    }
+                    if (errorDiv) { errorDiv.classList.add('show'); if (errorMsg) errorMsg.textContent = result.error || 'Invalid credentials'; }
                 }
             } catch (error) {
                 hideLoading();
-                console.error('Login error:', error);
-                if (errorDiv) {
-                    errorDiv.classList.add('show');
-                    if (errorMsg) errorMsg.textContent = 'Connection error. Please try again.';
-                }
+                if (errorDiv) { errorDiv.classList.add('show'); if (errorMsg) errorMsg.textContent = 'Connection error. Please try again.'; }
             } finally {
-                if (loginBtn) {
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
-                }
+                if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In'; }
             }
         }
 
@@ -1403,47 +1303,31 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
 
             const roleBadge = getElement('userRoleBadge');
             if (roleBadge) {
-                if (user.is_admin) {
-                    roleBadge.textContent = '👑 Admin';
-                    roleBadge.classList.add('admin');
-                } else {
-                    roleBadge.textContent = user.role || 'User';
-                    roleBadge.classList.remove('admin');
-                }
+                if (user.is_admin) { roleBadge.textContent = '👑 Admin'; roleBadge.classList.add('admin'); }
+                else { roleBadge.textContent = user.role || 'User'; roleBadge.classList.remove('admin'); }
             }
 
             const adminPanelBtn = getElement('adminPanelBtn');
-            if (adminPanelBtn) {
-                adminPanelBtn.style.display = user.is_admin ? 'inline-flex' : 'none';
-            }
+            if (adminPanelBtn) adminPanelBtn.style.display = user.is_admin ? 'inline-flex' : 'none';
 
             const createdByEl = getElement('created_by');
-            if (createdByEl && user.name) {
-                createdByEl.value = user.name;
-                createdByEl.classList.add('auto-filled');
-            }
+            if (createdByEl && user.name) { createdByEl.value = user.name; createdByEl.classList.add('auto-filled'); }
 
             setTimeout(initApp, 500);
         }
 
         async function logout() {
             if (!confirm('Are you sure you want to logout?')) return;
-
             const token = localStorage.getItem('jafari_token');
             if (token) {
-                try {
-                    await apiFetch(`${API_BASE_URL}/auth/logout`, { method: 'POST' });
-                } catch (e) {}
+                try { await apiFetch(`${API_BASE_URL}/auth/logout`, { method: 'POST' }); } catch (e) {}
             }
-
             localStorage.removeItem('jafari_token');
             localStorage.removeItem('jafari_user');
-
             state.isAuthenticated = false;
             state.user = null;
             state.isAdmin = false;
             state.reports = [];
-
             showLoginPage();
             const form = getElement('reportForm');
             if (form) form.reset();
@@ -1454,7 +1338,6 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
         function checkExistingSession() {
             const savedToken = localStorage.getItem('jafari_token');
             const savedUser = localStorage.getItem('jafari_user');
-
             if (savedToken && savedUser) {
                 try {
                     const user = JSON.parse(savedUser);
@@ -1469,13 +1352,12 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
         }
 
         // ============================================================
-        // SIGNATURE PAD CLASS
+        // SIGNATURE PAD
         // ============================================================
         class SignaturePad {
             constructor(canvasId, placeholderId, statusId) {
                 this.canvas = getElement(canvasId);
                 if (!this.canvas) return;
-
                 this.ctx = this.canvas.getContext('2d');
                 this.placeholder = getElement(placeholderId);
                 this.status = getElement(statusId);
@@ -1485,7 +1367,6 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 this.paths = [];
                 this.currentPath = [];
                 this.isSigned = false;
-
                 this.setupCanvas();
                 this.setupEventListeners();
                 this.updatePlaceholder();
@@ -1621,52 +1502,36 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
 
             download(filename) {
                 if (!this.isSigned && this.paths.length === 0) {
-                    showToast('Please sign first before downloading', 'error');
+                    showToast('Please sign first', 'error');
                     return;
                 }
-
                 const exportCanvas = document.createElement('canvas');
                 exportCanvas.width = this.canvas.width;
                 exportCanvas.height = this.canvas.height;
-                const expCtx = exportCanvas.getContext('2d');
-                expCtx.fillStyle = '#ffffff';
-                expCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
-                expCtx.drawImage(this.canvas, 0, 0);
-
+                const ctx = exportCanvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+                ctx.drawImage(this.canvas, 0, 0);
                 const link = document.createElement('a');
                 link.download = filename || `signature_${Date.now()}.png`;
                 link.href = exportCanvas.toDataURL('image/png');
-                document.body.appendChild(link);
                 link.click();
-                document.body.removeChild(link);
                 showToast('Signature downloaded ✓', 'success');
             }
 
-            getSignatureData() {
-                return this.canvas.toDataURL('image/png');
-            }
-
-            isSignatureSigned() {
-                return this.isSigned || this.paths.length > 0;
-            }
+            getSignatureData() { return this.canvas.toDataURL('image/png'); }
+            isSignatureSigned() { return this.isSigned || this.paths.length > 0; }
         }
 
         // ============================================================
         // GPS LOCATION MANAGER
         // ============================================================
         class GPSLocationManager {
-            constructor() {
-                this.currentPosition = null;
-                this.accuracy = null;
-                this.watchId = null;
-            }
+            constructor() { this.currentPosition = null; this.accuracy = null; this.watchId = null; }
 
             startTracking(onUpdate) {
                 this.onLocationUpdate = onUpdate;
-                if (!navigator.geolocation) {
-                    this.updateStatus('error', 'Geolocation not supported');
-                    return;
-                }
+                if (!navigator.geolocation) { this.updateStatus('error', 'Geolocation not supported'); return; }
                 this.updateStatus('loading', 'Detecting your location...');
                 navigator.geolocation.getCurrentPosition(
                     (pos) => this.handlePosition(pos),
@@ -1689,9 +1554,7 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 if (this.onLocationUpdate) this.onLocationUpdate(this.currentPosition, this.accuracy);
             }
 
-            handleError(error) {
-                this.updateStatus('error', 'Unable to get location. Please allow location access.');
-            }
+            handleError(error) { this.updateStatus('error', 'Unable to get location'); }
 
             getNearestLandmark(lat, lng) {
                 fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=18&addressdetails=1`)
@@ -1732,7 +1595,7 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
 
             refreshLocation() {
                 if (this.watchId) navigator.geolocation.clearWatch(this.watchId);
-                this.updateStatus('loading', 'Refreshing location...');
+                this.updateStatus('loading', 'Refreshing...');
                 navigator.geolocation.getCurrentPosition(
                     (pos) => this.handlePosition(pos),
                     (err) => this.handleError(err),
@@ -1752,10 +1615,7 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                     renderUserList(result.data);
                     updateStats(result.data);
                 }
-            } catch (error) {
-                console.error('Error loading users:', error);
-                showToast('Error loading users', 'error');
-            }
+            } catch (error) { showToast('Error loading users', 'error'); }
         }
 
         function renderUserList(users) {
@@ -1767,8 +1627,7 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 return;
             }
 
-            let html = '';
-            users.forEach(user => {
+            container.innerHTML = users.map(user => {
                 const isAdmin = user.is_admin || false;
                 const isCurrentUser = user.email === state.user?.email;
                 const hasPassword = user.password_set !== false;
@@ -1779,9 +1638,9 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 let roleText = user.role || 'User';
                 if (isAdmin) { roleClass += ' admin-role'; roleText = '👑 Admin'; }
                 else if (isInactive) { roleClass += ' inactive-role'; roleText = '🚫 Inactive'; }
-                else if (isPending) { roleClass += ' pending-role'; roleText = '⏳ Pending Setup'; }
+                else if (isPending) { roleClass += ' pending-role'; roleText = '⏳ Pending'; }
 
-                html += `
+                return `
                     <div class="admin-user-item">
                         <div style="flex:1;">
                             <div class="user-email">${user.email} ${isCurrentUser ? '👈' : ''}</div>
@@ -1790,29 +1649,27 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                         </div>
                         <div class="admin-user-actions">
                             ${!isAdmin && !isCurrentUser && isPending ? `
-                                <button class="resend-btn" onclick="resendInvitation('${user.email}')" title="Resend Invitation">
+                                <button class="resend-btn" onclick="resendInvitation('${user.email}')" title="Resend">
                                     <i class="fas fa-paper-plane"></i>
                                 </button>
                             ` : ''}
                             ${!isAdmin && !isCurrentUser && !isPending ? `
-                                <button class="toggle-btn" onclick="toggleUserStatus('${user.email}')" title="${isInactive ? 'Activate' : 'Deactivate'}">
+                                <button class="toggle-btn" onclick="toggleUserStatus('${user.email}')">
                                     <i class="fas fa-${isInactive ? 'check' : 'ban'}"></i>
                                 </button>
-                                <button class="resend-btn" onclick="resetUserPassword('${user.email}')" title="Reset Password">
+                                <button class="resend-btn" onclick="resetUserPassword('${user.email}')">
                                     <i class="fas fa-key"></i>
                                 </button>
                             ` : ''}
                             ${!isAdmin && !isCurrentUser ? `
-                                <button class="delete-btn" onclick="deleteUser('${user.email}')" title="Delete User">
+                                <button class="delete-btn" onclick="deleteUser('${user.email}')">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             ` : ''}
                         </div>
                     </div>
                 `;
-            });
-
-            container.innerHTML = html;
+            }).join('');
         }
 
         function updateStats(users) {
@@ -1843,10 +1700,9 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 const result = await response.json();
 
                 if (result.success) {
-                    showToast(result.message || `Invitation sent to ${email}`, 'success');
+                    showToast(result.message || `Invitation sent`, 'success');
                     if (emailEl) emailEl.value = '';
                     if (nameEl) nameEl.value = '';
-
                     if (result.invitation_link) {
                         const box = getElement('invitationLinkBox');
                         const linkEl = getElement('invitationLink');
@@ -1859,24 +1715,17 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 } else {
                     showToast(result.error || 'Failed to add user', 'error');
                 }
-            } catch (error) {
-                console.error('Error adding user:', error);
-                showToast('Error adding user', 'error');
-            }
+            } catch (error) { showToast('Error adding user', 'error'); }
         }
 
         async function deleteUser(email) {
-            if (!confirm(`Are you sure you want to remove ${email}?`)) return;
+            if (!confirm(`Remove ${email}?`)) return;
             try {
                 const response = await apiFetch(`${API_BASE_URL}/admin/users/${encodeURIComponent(email)}`, { method: 'DELETE' });
                 const result = await response.json();
-                if (result.success) {
-                    showToast(`User ${email} removed`, 'success');
-                    loadUsers();
-                } else {
-                    showToast(result.error || 'Failed to remove user', 'error');
-                }
-            } catch (error) { showToast('Error deleting user', 'error'); }
+                if (result.success) { showToast(`User removed`, 'success'); loadUsers(); }
+                else showToast(result.error || 'Failed', 'error');
+            } catch (error) { showToast('Error', 'error'); }
         }
 
         async function resendInvitation(email) {
@@ -1887,61 +1736,222 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 });
                 const result = await response.json();
                 if (result.success) {
-                    showToast(`Invitation resent to ${email}`, 'success');
+                    showToast(`Invitation resent`, 'success');
                     if (result.invitation_link) {
                         const box = getElement('invitationLinkBox');
                         const linkEl = getElement('invitationLink');
-                        if (box && linkEl) {
-                            linkEl.textContent = result.invitation_link;
-                            box.classList.add('show');
-                        }
+                        if (box && linkEl) { linkEl.textContent = result.invitation_link; box.classList.add('show'); }
                     }
-                } else {
-                    showToast(result.error || 'Failed to resend invitation', 'error');
-                }
-            } catch (error) { showToast('Error resending invitation', 'error'); }
+                } else showToast(result.error || 'Failed', 'error');
+            } catch (error) { showToast('Error', 'error'); }
         }
 
         async function resetUserPassword(email) {
-            if (!confirm(`Send a password reset link to ${email}?`)) return;
+            if (!confirm(`Send password reset to ${email}?`)) return;
             try {
                 const response = await apiFetch(`${API_BASE_URL}/admin/users/${encodeURIComponent(email)}/reset-password`, { method: 'POST' });
                 const result = await response.json();
                 if (result.success) {
-                    showToast(`Password reset link sent to ${email}`, 'success');
+                    showToast(`Reset link sent`, 'success');
                     if (result.invitation_link) {
                         const box = getElement('invitationLinkBox');
                         const linkEl = getElement('invitationLink');
-                        if (box && linkEl) {
-                            linkEl.textContent = result.invitation_link;
-                            box.classList.add('show');
-                        }
+                        if (box && linkEl) { linkEl.textContent = result.invitation_link; box.classList.add('show'); }
                     }
-                } else {
-                    showToast(result.error || 'Failed to reset password', 'error');
-                }
-            } catch (error) { showToast('Error resetting password', 'error'); }
+                } else showToast(result.error || 'Failed', 'error');
+            } catch (error) { showToast('Error', 'error'); }
         }
 
         async function toggleUserStatus(email) {
             try {
                 const response = await apiFetch(`${API_BASE_URL}/admin/users/${encodeURIComponent(email)}/toggle-status`, { method: 'POST' });
                 const result = await response.json();
-                if (result.success) {
-                    showToast(result.message, 'success');
-                    loadUsers();
-                } else {
-                    showToast(result.error || 'Failed to toggle status', 'error');
-                }
-            } catch (error) { showToast('Error toggling status', 'error'); }
+                if (result.success) { showToast(result.message, 'success'); loadUsers(); }
+                else showToast(result.error || 'Failed', 'error');
+            } catch (error) { showToast('Error', 'error'); }
         }
 
         function toggleAdminPanel() {
             const panel = getElement('adminPanel');
             if (panel) {
                 panel.classList.toggle('active');
-                if (panel.classList.contains('active')) loadUsers();
+                if (panel.classList.contains('active')) {
+                    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+                    document.querySelector('.admin-tab[data-tab="users"]')?.classList.add('active');
+                    getElement('tab-users')?.classList.add('active');
+                    loadUsers();
+                }
             }
+        }
+
+        // ============================================================
+        // AUDIT LOG
+        // ============================================================
+        async function loadAuditLog() {
+            const tbody = getElement('auditTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;"><span class="loading-spinner"></span> Loading...</td></tr>';
+
+            try {
+                const params = new URLSearchParams();
+                const startDate = getElement('auditStartDate')?.value;
+                const endDate = getElement('auditEndDate')?.value;
+                const userSearch = getElement('auditUserSearch')?.value.trim();
+                const customerSearch = getElement('auditCustomerSearch')?.value.trim();
+
+                if (startDate) params.append('start_date', startDate);
+                if (endDate) params.append('end_date', endDate);
+                if (userSearch) params.append('user_email', userSearch);
+                if (customerSearch) params.append('customer', customerSearch);
+                params.append('limit', '500');
+
+                const response = await apiFetch(`${API_BASE_URL}/admin/audit-log?${params.toString()}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--danger);">Error: ${result.error}</td></tr>`;
+                    return;
+                }
+
+                renderAuditTable(result.data);
+                updateAuditStats(result.data);
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--danger);">Failed to load</td></tr>`;
+            }
+        }
+
+        function renderAuditTable(entries) {
+            const tbody = getElement('auditTableBody');
+            if (!tbody) return;
+
+            if (!entries || entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray-600);">' +
+                    '<i class="fas fa-history" style="font-size:2rem;display:block;margin-bottom:10px;color:var(--gray-300);"></i>' +
+                    'No report audit entries yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = entries.map(e => {
+                const timestamp = e.timestamp ? new Date(e.timestamp).toLocaleString('en-KE', {
+                    year: 'numeric', month: 'short', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                }) : 'N/A';
+
+                const officer = `${e.generated_by_name || 'Unknown'}<br><small style="color:var(--gray-600);">${e.generated_by_email || ''}</small>`;
+                const customer = `${e.customer_name || 'N/A'}<br><small style="color:var(--gray-600);">No: ${e.customer_no || '-'}</small>`;
+
+                let loanAmount = e.loan_amount || '';
+                if (loanAmount && !isNaN(parseFloat(loanAmount))) {
+                    loanAmount = 'KES ' + parseFloat(loanAmount).toLocaleString();
+                }
+                const loan = `${e.loan_product || 'N/A'}<br><small style="color:var(--gray-600);">${loanAmount}</small>`;
+
+                const signatures = [
+                    e.has_team_leader_sig ? '<span class="badge sig">TL</span>' : '',
+                    e.has_agent_sig ? '<span class="badge sig">Agent</span>' : '',
+                    e.gps_location && e.gps_location !== 'N/A' ? '<span class="badge gps">GPS</span>' : '',
+                    e.kyc_status === 'verified' ? '<span class="badge verified">KYC</span>' : ''
+                ].join(' ');
+
+                return `
+                    <tr>
+                        <td style="white-space:nowrap;">${timestamp}</td>
+                        <td>${officer}</td>
+                        <td>${customer}</td>
+                        <td>${loan}</td>
+                        <td>${e.branch || 'N/A'}</td>
+                        <td><code style="font-size:0.75rem;background:var(--gray-100);padding:2px 6px;border-radius:3px;">${e.report_id || 'N/A'}</code></td>
+                        <td>${signatures || '<span style="color:var(--gray-300);">—</span>'}</td>
+                        <td>
+                            <button class="delete-entry-btn" onclick="deleteAuditEntry('${e.id}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateAuditStats(entries) {
+            const totalEl = getElement('auditTotal');
+            const usersEl = getElement('auditUsers');
+            const amountEl = getElement('auditTotalAmount');
+
+            if (totalEl) totalEl.textContent = entries.length;
+            if (usersEl) {
+                const uniqueUsers = new Set(entries.map(e => e.generated_by_email).filter(Boolean));
+                usersEl.textContent = uniqueUsers.size;
+            }
+            if (amountEl) {
+                const total = entries.reduce((sum, e) => {
+                    const amt = parseFloat(e.loan_amount);
+                    return sum + (isNaN(amt) ? 0 : amt);
+                }, 0);
+                amountEl.textContent = total.toLocaleString('en-KE');
+            }
+        }
+
+        async function deleteAuditEntry(entryId) {
+            if (!confirm('Delete this audit entry permanently?')) return;
+            try {
+                const response = await apiFetch(`${API_BASE_URL}/admin/audit-log/${entryId}`, { method: 'DELETE' });
+                const result = await response.json();
+                if (result.success) { showToast('Entry deleted', 'success'); loadAuditLog(); }
+                else showToast(result.error || 'Failed', 'error');
+            } catch (error) { showToast('Error', 'error'); }
+        }
+
+        async function exportAuditCsv() {
+            try {
+                showToast('Preparing CSV...', 'info');
+                const response = await apiFetch(`${API_BASE_URL}/admin/audit-log/export`);
+                const result = await response.json();
+                if (!result.success) { showToast(result.error || 'Failed', 'error'); return; }
+
+                const csvContent = atob(result.csv);
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = result.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast(`Exported ${result.count} entries`, 'success');
+            } catch (error) { showToast('Error exporting', 'error'); }
+        }
+
+        function setupAuditTabs() {
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+                    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+                    const content = document.getElementById(`tab-${targetTab}`);
+                    if (content) content.classList.add('active');
+
+                    if (targetTab === 'users') loadUsers();
+                    if (targetTab === 'audit') loadAuditLog();
+                });
+            });
+        }
+
+        function setupAuditListeners() {
+            getElement('auditApplyFilters')?.addEventListener('click', loadAuditLog);
+            getElement('auditClearFilters')?.addEventListener('click', () => {
+                ['auditStartDate', 'auditEndDate', 'auditUserSearch', 'auditCustomerSearch'].forEach(id => {
+                    const el = getElement(id);
+                    if (el) el.value = '';
+                });
+                loadAuditLog();
+            });
+            getElement('auditExportCsv')?.addEventListener('click', exportAuditCsv);
+            ['auditUserSearch', 'auditCustomerSearch'].forEach(id => {
+                getElement(id)?.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); loadAuditLog(); }
+                });
+            });
         }
 
         // ============================================================
@@ -1949,14 +1959,13 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
         // ============================================================
         function initApp() {
             console.log('🚀 Initializing app...');
-
             initAutoDate();
 
             state.gpsManager = new GPSLocationManager();
             state.gpsManager.startTracking((position) => {
                 if (position && state.map) {
                     state.map.setView([position.lat, position.lng], 16);
-                    setLocation(position.lat, position.lng, 'GPS');
+                    setLocation(position.lat, position.lng);
                 }
             });
 
@@ -1998,6 +2007,8 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
             updatePreview();
             checkDynamicsConnection();
             setupPasswordFormListeners();
+            setupAuditTabs();
+            setupAuditListeners();
 
             showToast('📍 GPS enabled · Date auto-captured', 'info');
         }
@@ -2009,9 +2020,17 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 if (dot) dot.className = 'status-dot checking';
                 if (text) text.textContent = 'Checking NAV connection...';
 
-                const response = await apiFetch(`${API_BASE_URL}/dynamics/health`);
-                const data = await response.json();
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
 
+                let response;
+                try {
+                    response = await apiFetch(`${API_BASE_URL}/dynamics/health`, { signal: controller.signal });
+                } finally {
+                    clearTimeout(timeoutId);
+                }
+
+                const data = await response.json();
                 if (data.success) {
                     if (dot) dot.className = 'status-dot connected';
                     if (text) text.textContent = '✅ Connected to Dynamics NAV';
@@ -2023,7 +2042,7 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 const dot = getElement('statusDot');
                 const text = getElement('statusText');
                 if (dot) dot.className = 'status-dot disconnected';
-                if (text) text.textContent = '❌ NAV connection failed';
+                if (text) text.textContent = error.name === 'AbortError' ? '⏱️ NAV timeout' : '❌ NAV connection failed';
             }
         }
 
@@ -2037,7 +2056,7 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 attribution: '© OpenStreetMap', maxZoom: 19
             }).addTo(state.map);
             state.map.on('click', (e) => {
-                setLocation(e.latlng.lat, e.latlng.lng, 'Map selection');
+                setLocation(e.latlng.lat, e.latlng.lng);
                 reverseGeocode(e.latlng.lat, e.latlng.lng);
             });
         }
@@ -2100,9 +2119,7 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                         const locEl = getElement('meeting_location');
                         if (locEl) locEl.value = data[0].display_name;
                         showToast('Location found', 'success');
-                    } else {
-                        showToast('Location not found', 'error');
-                    }
+                    } else showToast('Location not found', 'error');
                 })
                 .catch(() => showToast('Error searching', 'error'));
         }
@@ -2130,23 +2147,16 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
             try {
                 const response = await apiFetch(`${API_BASE_URL}/dynamics/agents/${encodeURIComponent(code)}`);
                 const result = await response.json();
-
                 if (result.success && result.data) {
                     autoFillAgentData(result.data);
                     showToast(`Agent ${result.data.code || code} loaded`, 'success');
-                } else {
-                    showToast(result.error || 'Agent not found', 'error');
-                }
-            } catch (error) {
-                showToast('Error: ' + error.message, 'error');
-            } finally {
-                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-search"></i> Fetch'; }
-            }
+                } else showToast(result.error || 'Agent not found', 'error');
+            } catch (error) { showToast('Error: ' + error.message, 'error'); }
+            finally { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-search"></i> Fetch'; } }
         }
 
         function autoFillAgentData(data) {
             state.agentData = data;
-
             ['agent_name', 'agent_type', 'agent_phone', 'agent_email'].forEach((id, i) => {
                 const keys = ['name', 'type', 'phone', 'email'];
                 const el = getElement(id);
@@ -2212,26 +2222,18 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
             try {
                 const response = await apiFetch(`${API_BASE_URL}/dynamics/customers/${type}/${encodeURIComponent(value)}`);
                 const result = await response.json();
-
                 if (result.success && result.data) {
                     displayCustomerData(result.data);
-
                     const map = { customer_name: 'Name', customer_id: 'No', customer_phone: 'Mobile_Phone_No', customer_email: 'E_Mail', customer_address: 'Address' };
                     Object.entries(map).forEach(([id, key]) => {
                         const el = getElement(id);
                         if (el && result.data[key]) { el.value = result.data[key]; el.classList.add('auto-filled'); }
                     });
-
                     state.customerData = result.data;
                     showToast(`Customer ${result.data.Name || ''} loaded`, 'success');
-                } else {
-                    showToast(result.error || 'Customer not found', 'error');
-                }
-            } catch (error) {
-                showToast('Error: ' + error.message, 'error');
-            } finally {
-                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-search"></i> Fetch'; }
-            }
+                } else showToast(result.error || 'Customer not found', 'error');
+            } catch (error) { showToast('Error: ' + error.message, 'error'); }
+            finally { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-search"></i> Fetch'; } }
         }
 
         function displayCustomerData(data) {
@@ -2247,7 +2249,6 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                 custPhoneDisplay: 'Mobile_Phone_No',
                 custAddressDisplay: 'Address'
             };
-
             Object.entries(map).forEach(([id, key]) => {
                 const el = getElement(id);
                 if (el) {
@@ -2255,18 +2256,6 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
                     el.textContent = (value !== undefined && value !== null && value !== '') ? value : 'N/A';
                 }
             });
-
-            const modEl = getElement('custModifiedDisplay');
-            if (modEl) {
-                if (data.Last_Modified_DateTime) {
-                    try { modEl.textContent = new Date(data.Last_Modified_DateTime).toLocaleString(); }
-                    catch { modEl.textContent = data.Last_Modified_DateTime; }
-                } else { modEl.textContent = 'N/A'; }
-            }
-
-            const fetchMethodEl = getElement('custFetchMethod');
-            if (fetchMethodEl) fetchMethodEl.textContent = data._source || 'NAV';
-
             const display = getElement('customerInfoDisplay');
             if (display) display.style.display = 'block';
         }
@@ -2344,9 +2333,7 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
             }
 
             if (!formData.team_leader_confirmed || !formData.agent_confirmed) {
-                if (!confirm('⚠️ Signature confirmation is incomplete.\n\nThe Team Lead has not confirmed that both signatures are present.\n\nContinue anyway?')) {
-                    return;
-                }
+                if (!confirm('⚠️ Signature confirmation incomplete. Continue anyway?')) return;
             }
 
             state.isGenerating = true;
@@ -2435,13 +2422,13 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
 
             container.innerHTML = state.reports.map((r, i) => `
                 <div class="preview-item">
-                    <div class="preview-info">
+                    <div>
                         <div class="preview-name">
                             <i class="fas fa-file-pdf" style="color:#dc2626;"></i>
                             ${r.data.customer_name || 'Report'}
                             ${r.hasGPS ? '<span class="gps-badge">GPS</span>' : ''}
-                            ${r.hasTeamLeaderSig ? '<span class="signature-badge">TL Signed</span>' : ''}
-                            ${r.hasAgentSig ? '<span class="signature-badge">Agent Signed</span>' : ''}
+                            ${r.hasTeamLeaderSig ? '<span class="signature-badge">TL</span>' : ''}
+                            ${r.hasAgentSig ? '<span class="signature-badge">Agent</span>' : ''}
                         </div>
                         <div class="preview-meta">${r.data.report_id} • ${r.data.branch || ''} • ${r.data.loan_product || ''}</div>
                     </div>
@@ -2536,7 +2523,7 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
 
             getElement('copyInvitationLink')?.addEventListener('click', () => {
                 const link = getElement('invitationLink')?.textContent;
-                if (link) navigator.clipboard.writeText(link).then(() => showToast('Link copied!', 'success'));
+                if (link) navigator.clipboard.writeText(link).then(() => showToast('Copied!', 'success'));
             });
 
             getElement('goToLoginLink')?.addEventListener('click', (e) => {
@@ -2554,20 +2541,16 @@ const API_BASE_URL = 'https://publications-reasonable-host-tonight.trycloudflare
         }
 
         // ============================================================
-        // START APPLICATION
+        // START
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📄 DOM loaded');
-
             const inviteToken = getURLParameter('invite');
-
             if (inviteToken) {
                 validateAndShowPasswordSetup(inviteToken);
             } else {
                 const hasSession = checkExistingSession();
                 if (!hasSession) showLoginPage();
             }
-
             setupEventListeners();
         });
     </script>
