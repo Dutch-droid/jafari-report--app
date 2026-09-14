@@ -54,3 +54,4 @@ htmlcov/
 *.tmp
 *.bak
 *.backup
+audit_log.json
