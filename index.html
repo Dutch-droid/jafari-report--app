@@ -651,7 +651,7 @@
                     <div class="audit-filters">
                         <input type="date" id="auditStartDate" title="Start date">
                         <input type="date" id="auditEndDate" title="End date">
-                        <input type="text" id="auditUserSearch" placeholder="Filter by officer email">
+                        <input type="text" id="auditUserSearch" placeholder="Filter by Agent email">
                         <input type="text" id="auditCustomerSearch" placeholder="Search customer / report ID">
                         <button class="btn-primary" id="auditApplyFilters"><i class="fas fa-filter"></i> Filter</button>
                         <button class="btn-secondary" id="auditClearFilters"><i class="fas fa-times"></i> Clear</button>
@@ -1025,7 +1025,7 @@
         // ============================================================
         // CONFIGURATION
         // ============================================================
-        const API_BASE_URL = 'https://geography-generous-ivory-medicines.trycloudflare.com/api';  
+        const API_BASE_URL = 'https://mating-does-hire-webcast.trycloudflare.com/api';  
 
         const state = {
             reports: [],
@@ -1849,7 +1849,7 @@
 
                 const signatures = [
                     e.has_team_leader_sig ? '<span class="badge sig">TL</span>' : '',
-                    e.has_agent_sig ? '<span class="badge sig">Agent</span>' : '',
+                    e.has_officer_sig ? '<span class="badge sig">Officer</span>' : '',
                     e.gps_location && e.gps_location !== 'N/A' ? '<span class="badge gps">GPS</span>' : '',
                     e.kyc_status === 'verified' ? '<span class="badge verified">KYC</span>' : ''
                 ].join(' ');
