@@ -181,84 +181,6 @@
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
 
-        .paste-helper {
-            background: #fffbeb;
-            border: 2px dashed #fcd34d;
-            border-radius: 8px;
-            padding: 14px 16px;
-            margin-bottom: 16px;
-        }
-        .paste-helper-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #92400e;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .paste-helper p {
-            font-size: 0.8rem;
-            color: #78350f;
-            margin-bottom: 10px;
-        }
-        .paste-helper textarea {
-            width: 100%;
-            min-height: 80px;
-            padding: 10px;
-            border: 2px solid #fcd34d;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 0.8rem;
-            resize: vertical;
-            background: white;
-        }
-        .paste-helper textarea:focus {
-            outline: none;
-            border-color: var(--warning);
-            box-shadow: 0 0 0 3px rgba(245,158,11,0.15);
-        }
-        .paste-helper-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .paste-helper .btn-parse {
-            padding: 8px 16px;
-            background: var(--warning);
-            color: var(--gray-800);
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .paste-helper .btn-parse:hover { opacity: 0.9; }
-        .paste-helper .btn-clear-paste {
-            padding: 8px 16px;
-            background: var(--gray-100);
-            color: var(--gray-800);
-            border: 2px solid var(--gray-200);
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .paste-helper .parse-status {
-            margin-top: 8px;
-            font-size: 0.8rem;
-            color: #065f46;
-            display: none;
-        }
-        .paste-helper .parse-status.show { display: block; }
-        .paste-helper .parse-status.error { color: #991b1b; }
 
         .manual-entry-hint {
             background: #eff6ff;
@@ -389,7 +311,6 @@
         .auto-filled { background: #ecfdf5 !important; border-color: #34d399 !important; }
         .gps-filled { background: #eff6ff !important; border-color: #3b82f6 !important; }
         .date-auto-filled { background: #fef3c7 !important; border-color: #fcd34d !important; }
-        .parsed-field { background: #fef3c7 !important; border-color: #f59e0b !important; }
 
         .fetch-success {
             background: #ecfdf5; border: 1px solid #34d399; border-radius: 6px;
@@ -859,40 +780,6 @@
                         <!-- CUSTOMER INFORMATION (Manual Entry) -->
                         <div class="form-section">
                             <div class="form-section-title"><i class="fas fa-user"></i> Customer Information</div>
-                            
-                            <div class="manual-entry-hint">
-                                <i class="fas fa-info-circle"></i>
-                                Enter customer details manually, or paste from your NAV customer card below.
-                            </div>
-
-                            <!-- Paste Helper -->
-                            <div class="paste-helper">
-                                <div class="paste-helper-title">
-                                    <i class="fas fa-paste"></i> Paste from NAV (Optional)
-                                </div>
-                                <p>Copy text from your NAV customer card and paste here. The system will try to extract the fields automatically.</p>
-                                <textarea id="pasteTextArea" placeholder="Paste customer information from NAV here...
-
-Example:
-Name: KENNEDY OTIENO CHACHA
-No: MCHGS027
-ID No: 13385902
-Email: kenchacha.otieno@gmail.com
-Phone: 0724213100
-Employer Code: EMP005
-Status: Active
-Sales Team Lead: TL056"></textarea>
-                                <div class="paste-helper-actions">
-                                    <button type="button" class="btn-parse" id="parsePasteBtn">
-                                        <i class="fas fa-magic"></i> Parse & Fill Fields
-                                    </button>
-                                    <button type="button" class="btn-clear-paste" id="clearPasteBtn">
-                                        <i class="fas fa-times"></i> Clear
-                                    </button>
-                                </div>
-                                <div class="parse-status" id="parseStatus"></div>
-                            </div>
-
                             <div class="form-group">
                                 <label for="customer_name">Customer Full Name <span class="required">*</span></label>
                                 <input type="text" id="customer_name" required placeholder="Enter customer name">
