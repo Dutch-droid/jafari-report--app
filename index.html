@@ -491,6 +491,103 @@
         .signature-badge { background: #dbeafe; color: #1e40af; }
         .manual-badge { background: #fef3c7; color: #92400e; }
 
+        /* ===== AUTOFILL / HISTORY ===== */
+        .autofill-toolbar {
+            display: flex; gap: 8px; flex-wrap: wrap;
+            margin-bottom: 16px; padding: 12px;
+            background: #f0f9ff; border: 1px solid #bae6fd;
+            border-radius: 8px; align-items: center;
+        }
+        .autofill-toolbar .af-label {
+            font-size: 0.8rem; font-weight: 700; color: #0369a1;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .autofill-toolbar .af-spacer { flex: 1; }
+        .btn-af {
+            padding: 6px 12px; border: none; border-radius: 5px;
+            font-size: 0.78rem; font-weight: 600; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 5px;
+            transition: all 0.2s;
+        }
+        .btn-af.primary { background: var(--primary); color: white; }
+        .btn-af.success { background: var(--success); color: white; }
+        .btn-af.danger  { background: var(--danger);  color: white; }
+        .btn-af.ghost   { background: white; color: var(--gray-800); border: 1px solid var(--gray-300); }
+        .btn-af:hover { transform: translateY(-1px); opacity: 0.9; }
+
+        .autofill-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 0.68rem; font-weight: 700;
+            background: #dbeafe; color: #1e40af;
+            padding: 2px 8px; border-radius: 10px;
+            margin-left: 6px;
+        }
+
+        /* Suggestion dropdown */
+        .suggest-wrap { position: relative; }
+        .suggest-list {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: white; border: 2px solid var(--secondary);
+            border-top: none; border-radius: 0 0 6px 6px;
+            max-height: 220px; overflow-y: auto; z-index: 50;
+            box-shadow: var(--shadow-lg); display: none;
+        }
+        .suggest-list.show { display: block; }
+        .suggest-item {
+            padding: 8px 12px; cursor: pointer; font-size: 0.85rem;
+            border-bottom: 1px solid var(--gray-100);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .suggest-item:last-child { border-bottom: none; }
+        .suggest-item:hover, .suggest-item.active {
+            background: #eff6ff; color: var(--primary);
+        }
+        .suggest-item .suggest-meta {
+            font-size: 0.72rem; color: var(--gray-600);
+        }
+
+        .history-modal-backdrop {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 10002; display: none; justify-content: center; align-items: center;
+            padding: 20px;
+        }
+        .history-modal-backdrop.show { display: flex; }
+        .history-modal {
+            background: white; border-radius: 12px; padding: 24px;
+            max-width: 640px; width: 100%; max-height: 80vh; overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+        .history-modal h3 {
+            color: var(--primary); margin-bottom: 4px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .history-modal .modal-sub {
+            font-size: 0.8rem; color: var(--gray-600); margin-bottom: 16px;
+        }
+        .history-section-title {
+            font-size: 0.85rem; font-weight: 700; color: var(--primary);
+            margin: 16px 0 8px; padding-bottom: 4px;
+            border-bottom: 2px solid var(--gray-100);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .history-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 10px; border-radius: 6px; font-size: 0.82rem;
+            border: 1px solid var(--gray-100); margin-bottom: 4px;
+        }
+        .history-row:hover { background: var(--gray-50); }
+        .history-row .hr-name { font-weight: 600; }
+        .history-row .hr-meta { color: var(--gray-600); font-size: 0.75rem; }
+        .history-empty {
+            text-align: center; padding: 16px; color: var(--gray-600);
+            font-size: 0.82rem; font-style: italic;
+        }
+        .modal-actions {
+            display: flex; gap: 8px; justify-content: flex-end;
+            margin-top: 20px; padding-top: 16px;
+            border-top: 1px solid var(--gray-200);
+        }
+
         @media (max-width: 600px) {
             .logo img { height: 40px; }
             .logo h1 { font-size: 1.2rem; }
@@ -500,6 +597,47 @@
     </style>
 </head>
 <body>
+
+    <!-- ===== HISTORY MODAL ===== -->
+    <div class="history-modal-backdrop" id="historyModalBackdrop">
+        <div class="history-modal">
+            <h3><i class="fas fa-history"></i> Recent History</h3>
+            <p class="modal-sub">
+                <i class="fas fa-lock" style="color:var(--success);"></i>
+                Stored only in this browser. Nothing sent to the server.
+            </p>
+
+            <div class="history-section-title">
+                <span><i class="fas fa-user-tie"></i> Officer Profile</span>
+                <button type="button" class="btn-af ghost" id="hmLoadOfficer">
+                    <i class="fas fa-download"></i> Load
+                </button>
+            </div>
+            <div id="hmOfficerBox"></div>
+
+            <div class="history-section-title">
+                <span><i class="fas fa-users"></i> Recent Customers (last 10)</span>
+                <button type="button" class="btn-af danger" id="hmClearCustomers">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+            </div>
+            <div id="hmCustomersBox"></div>
+
+            <div class="history-section-title">
+                <span><i class="fas fa-user-friends"></i> Recent Agents (last 10)</span>
+                <button type="button" class="btn-af danger" id="hmClearAgents">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+            </div>
+            <div id="hmAgentsBox"></div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="hmClose">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
@@ -684,6 +822,25 @@
                     </div>
 
                     <form id="reportForm" class="report-form">
+                        <!-- ===== AUTOFILL TOOLBAR ===== -->
+                        <div class="autofill-toolbar" id="autofillToolbar">
+                            <span class="af-label"><i class="fas fa-magic"></i> Quick Fill:</span>
+                            <button type="button" class="btn-af primary" id="afLoadOfficer">
+                                <i class="fas fa-user-check"></i> My Details
+                            </button>
+                            <button type="button" class="btn-af ghost" id="afSaveOfficer">
+                                <i class="fas fa-save"></i> Save Officer
+                            </button>
+                            <button type="button" class="btn-af ghost" id="afShowHistory">
+                                <i class="fas fa-history"></i> History
+                                <span class="autofill-badge" id="afHistoryCount">0</span>
+                            </button>
+                            <span class="af-spacer"></span>
+                            <button type="button" class="btn-af danger" id="afClearHistory">
+                                <i class="fas fa-trash-alt"></i> Clear History
+                            </button>
+                        </div>
+
                         <div class="connection-status">
                             <span class="status-dot"></span>
                             <span>Manual Entry Mode — no live NAV connection</span>
@@ -778,14 +935,17 @@
                         <!-- CUSTOMER INFORMATION (Manual Entry) -->
                         <div class="form-section">
                             <div class="form-section-title"><i class="fas fa-user"></i> Customer Information</div>
-                            <div class="form-group">
+
+                            <div class="form-group suggest-wrap">
                                 <label for="customer_name">Customer Full Name <span class="required">*</span></label>
-                                <input type="text" id="customer_name" required placeholder="Enter customer name">
+                                <input type="text" id="customer_name" required placeholder="Enter customer name" autocomplete="off">
+                                <div class="suggest-list" id="suggest_customer_name"></div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group">
+                                <div class="form-group suggest-wrap">
                                     <label for="customer_id">Customer No</label>
-                                    <input type="text" id="customer_id" placeholder="e.g. MCHGS027">
+                                    <input type="text" id="customer_id" placeholder="e.g. MCHGS027" autocomplete="off">
+                                    <div class="suggest-list" id="suggest_customer_id"></div>
                                 </div>
                                 <div class="form-group">
                                     <label for="customer_id_no">ID Number</label>
@@ -822,9 +982,10 @@
                                         <option value="Pending">Pending</option>
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group suggest-wrap">
                                     <label for="customer_sales_lead">Sales Team Lead</label>
-                                    <input type="text" id="customer_sales_lead" placeholder="e.g. TL056">
+                                    <input type="text" id="customer_sales_lead" placeholder="e.g. TL056" autocomplete="off">
+                                    <div class="suggest-list" id="suggest_sales_lead"></div>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -908,9 +1069,10 @@
                                 </div>
                                 <div class="form-group"><label for="kyc_date_verified">Date Verified</label><input type="date" id="kyc_date_verified"></div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group suggest-wrap">
                                 <label for="kyc_verified_by">Verified By (Sales Agent)</label>
-                                <input type="text" id="kyc_verified_by" placeholder="e.g. Jennifer Mwai (AGENT1114)">
+                                <input type="text" id="kyc_verified_by" placeholder="e.g. Jennifer Mwai (AGENT1114)" autocomplete="off">
+                                <div class="suggest-list" id="suggest_agent"></div>
                             </div>
                             <div class="form-group">
                                 <label for="kyc_notes">KYC Notes</label>
@@ -1069,8 +1231,6 @@
             if (timeEl) timeEl.value = getCurrentTimeString();
             updateMeetingDatetime();
         }
-
-
 
         // ============================================================
         // API FETCH HELPER
@@ -1580,6 +1740,431 @@
         }
 
         // ============================================================
+        // BROWSER-ONLY AUTOFILL (localStorage)
+        // ============================================================
+        const LS_KEYS = {
+            OFFICER:   'jafari_officer_profile',
+            CUSTOMERS: 'jafari_recent_customers',
+            AGENTS:    'jafari_recent_agents'
+        };
+        const HISTORY_MAX = 10;
+
+        const AutofillStore = {
+            _read(key, fallback) {
+                try {
+                    const raw = localStorage.getItem(key);
+                    if (!raw) return fallback;
+                    const parsed = JSON.parse(raw);
+                    return parsed ?? fallback;
+                } catch (e) {
+                    console.warn('AutofillStore read error:', key, e);
+                    return fallback;
+                }
+            },
+            _write(key, value) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(value));
+                    return true;
+                } catch (e) {
+                    console.warn('AutofillStore write error:', key, e);
+                    return false;
+                }
+            },
+
+            getOfficer() { return this._read(LS_KEYS.OFFICER, null); },
+            saveOfficer(profile) {
+                profile.saved_at = new Date().toISOString();
+                return this._write(LS_KEYS.OFFICER, profile);
+            },
+            clearOfficer() { localStorage.removeItem(LS_KEYS.OFFICER); },
+
+            getCustomers() { return this._read(LS_KEYS.CUSTOMERS, []); },
+            pushCustomer(customer) {
+                if (!customer || !customer.name) return;
+                const list = this.getCustomers();
+                const key = (c) =>
+                    (c.name || '').toLowerCase().trim() + '|' +
+                    ((c.id_no || c.customer_no || '').toString().toLowerCase().trim());
+                const newKey = key(customer);
+                const filtered = list.filter(c => key(c) !== newKey);
+                filtered.unshift({ ...customer, saved_at: new Date().toISOString() });
+                const trimmed = filtered.slice(0, HISTORY_MAX);
+                this._write(LS_KEYS.CUSTOMERS, trimmed);
+            },
+            clearCustomers() { localStorage.removeItem(LS_KEYS.CUSTOMERS); },
+
+            getAgents() { return this._read(LS_KEYS.AGENTS, []); },
+            pushAgent(agent) {
+                if (!agent || !agent.name) return;
+                const list = this.getAgents();
+                const key = (a) => (a.name || '').toLowerCase().trim();
+                const filtered = list.filter(a => key(a) !== key(agent));
+                filtered.unshift({ ...agent, saved_at: new Date().toISOString() });
+                const trimmed = filtered.slice(0, HISTORY_MAX);
+                this._write(LS_KEYS.AGENTS, trimmed);
+            },
+            clearAgents() { localStorage.removeItem(LS_KEYS.AGENTS); },
+
+            counts() {
+                return {
+                    officer: this.getOfficer() ? 1 : 0,
+                    customers: this.getCustomers().length,
+                    agents: this.getAgents().length
+                };
+            }
+        };
+
+        function parseAgentString(str) {
+            if (!str) return { name: '', code: '' };
+            const m = str.match(/^(.+?)\s*[\(\[]\s*([A-Z0-9\-_]+)\s*[\)\]]\s*$/i);
+            if (m) return { name: m[1].trim(), code: m[2].trim() };
+            return { name: str.trim(), code: '' };
+        }
+
+        function captureOfficerProfile() {
+            return {
+                name:  (getElement('created_by')?.value || '').trim(),
+                role:  getElement('user_role')?.value || '',
+                agent_code: (getElement('agent_code')?.value || '').trim(),
+                phone: (getElement('officer_phone')?.value || '').trim(),
+                email: state.user?.email || ''
+            };
+        }
+
+        function captureCustomer() {
+            return {
+                name:        (getElement('customer_name')?.value || '').trim(),
+                customer_no: (getElement('customer_id')?.value || '').trim(),
+                id_no:       (getElement('customer_id_no')?.value || '').trim(),
+                phone:       (getElement('customer_phone')?.value || '').trim(),
+                email:       (getElement('customer_email')?.value || '').trim(),
+                employer:    (getElement('customer_employer')?.value || '').trim(),
+                address:     (getElement('customer_address')?.value || '').trim(),
+                status:      getElement('customer_status')?.value || '',
+                sales_lead:  (getElement('customer_sales_lead')?.value || '').trim(),
+                state:       (getElement('customer_state')?.value || '').trim()
+            };
+        }
+
+        function captureAgent() {
+            const raw = (getElement('kyc_verified_by')?.value || '').trim();
+            if (!raw) return null;
+            const parsed = parseAgentString(raw);
+            return {
+                name: parsed.name,
+                code: parsed.code,
+                role: getElement('user_role')?.value || '',
+                raw: raw
+            };
+        }
+
+        function applyOfficerProfile(profile) {
+            if (!profile) return false;
+            const set = (id, val, highlight = true) => {
+                const el = getElement(id);
+                if (!el || !val) return;
+                el.value = val;
+                if (highlight) el.classList.add('auto-filled');
+            };
+            set('created_by', profile.name);
+            if (profile.role) {
+                const sel = getElement('user_role');
+                if (sel) sel.value = profile.role;
+            }
+            set('agent_code', profile.agent_code);
+            if (profile.phone) set('officer_phone', profile.phone);
+            showToast('Officer profile loaded', 'success');
+            return true;
+        }
+
+        function applyCustomer(c) {
+            if (!c) return;
+            const set = (id, val) => {
+                const el = getElement(id);
+                if (el && val) {
+                    el.value = val;
+                    el.classList.add('auto-filled');
+                }
+            };
+            set('customer_name', c.name);
+            set('customer_id', c.customer_no);
+            set('customer_id_no', c.id_no);
+            set('customer_phone', c.phone);
+            set('customer_email', c.email);
+            set('customer_employer', c.employer);
+            set('customer_address', c.address);
+            set('customer_sales_lead', c.sales_lead);
+            set('customer_state', c.state);
+            const statusSel = getElement('customer_status');
+            if (statusSel && c.status) statusSel.value = c.status;
+            showToast('Customer details filled', 'success');
+        }
+
+        function applyAgent(a) {
+            if (!a) return;
+            const el = getElement('kyc_verified_by');
+            if (el) {
+                el.value = a.raw || (a.code ? `${a.name} (${a.code})` : a.name);
+                el.classList.add('auto-filled');
+            }
+            showToast('Agent details filled', 'success');
+        }
+
+        function refreshHistoryBadge() {
+            const counts = AutofillStore.counts();
+            const badge = getElement('afHistoryCount');
+            if (badge) {
+                const total = counts.customers + counts.agents;
+                badge.textContent = total;
+                badge.style.display = total > 0 ? 'inline-flex' : 'none';
+            }
+        }
+
+        function autoSaveAfterGenerate(formData) {
+            const officer = captureOfficerProfile();
+            if (officer.name && officer.agent_code) {
+                AutofillStore.saveOfficer(officer);
+            }
+            const cust = captureCustomer();
+            if (cust.name) AutofillStore.pushCustomer(cust);
+            const agent = captureAgent();
+            if (agent && agent.name) AutofillStore.pushAgent(agent);
+
+            refreshHistoryBadge();
+        }
+
+        function attachSuggestions(inputId, listId, getItems, onPick, renderItem) {
+            const input = getElement(inputId);
+            const list  = getElement(listId);
+            if (!input || !list) return;
+
+            const close = () => { list.classList.remove('show'); list.innerHTML = ''; };
+
+            const open = (items) => {
+                if (!items || items.length === 0) { close(); return; }
+                list.innerHTML = items.map((item, i) =>
+                    `<div class="suggest-item" data-idx="${i}">${renderItem(item)}</div>`
+                ).join('');
+                list.classList.add('show');
+                list.querySelectorAll('.suggest-item').forEach(el => {
+                    el.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        const idx = parseInt(el.dataset.idx, 10);
+                        onPick(items[idx]);
+                        close();
+                    });
+                });
+            };
+
+            const refresh = () => {
+                const q = input.value.toLowerCase().trim();
+                const all = getItems();
+                const filtered = q
+                    ? all.filter(x => JSON.stringify(x).toLowerCase().includes(q))
+                    : all;
+                open(filtered.slice(0, 8));
+            };
+
+            input.addEventListener('focus', refresh);
+            input.addEventListener('input', refresh);
+            input.addEventListener('blur', () => setTimeout(close, 150));
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') close();
+            });
+        }
+
+        function setupAutofillSuggestions() {
+            attachSuggestions(
+                'customer_name', 'suggest_customer_name',
+                () => AutofillStore.getCustomers(),
+                (c) => applyCustomer(c),
+                (c) => `<span><strong>${c.name || '(no name)'}</strong></span>
+                        <span class="suggest-meta">${c.customer_no || c.id_no || ''}</span>`
+            );
+
+            attachSuggestions(
+                'customer_id', 'suggest_customer_id',
+                () => AutofillStore.getCustomers(),
+                (c) => applyCustomer(c),
+                (c) => `<span><strong>${c.customer_no || '(no number)'}</strong>
+                            <span class="suggest-meta"> — ${c.name || ''}</span></span>`
+            );
+
+            attachSuggestions(
+                'kyc_verified_by', 'suggest_agent',
+                () => AutofillStore.getAgents(),
+                (a) => applyAgent(a),
+                (a) => `<span><strong>${a.name}</strong>
+                            ${a.code ? `<span class="suggest-meta"> (${a.code})</span>` : ''}</span>`
+            );
+
+            attachSuggestions(
+                'customer_sales_lead', 'suggest_sales_lead',
+                () => AutofillStore.getAgents(),
+                (a) => {
+                    const el = getElement('customer_sales_lead');
+                    if (el) {
+                        el.value = a.code || a.name;
+                        el.classList.add('auto-filled');
+                    }
+                },
+                (a) => `<span><strong>${a.code || a.name}</strong>
+                            <span class="suggest-meta"> — ${a.name}</span></span>`
+            );
+        }
+
+        function renderHistoryModal() {
+            const officerBox = getElement('hmOfficerBox');
+            const officer = AutofillStore.getOfficer();
+            if (officerBox) {
+                officerBox.innerHTML = officer
+                    ? `<div class="history-row">
+                           <div>
+                               <div class="hr-name">${officer.name || '(no name)'}</div>
+                               <div class="hr-meta">${officer.agent_code || ''} · ${officer.role || ''}</div>
+                           </div>
+                       </div>`
+                    : `<div class="history-empty">No officer profile saved yet.</div>`;
+            }
+
+            const custBox = getElement('hmCustomersBox');
+            const customers = AutofillStore.getCustomers();
+            if (custBox) {
+                custBox.innerHTML = customers.length === 0
+                    ? `<div class="history-empty">No recent customers.</div>`
+                    : customers.map((c, i) => `
+                        <div class="history-row">
+                            <div>
+                                <div class="hr-name">${c.name || '(no name)'}</div>
+                                <div class="hr-meta">
+                                    ${c.customer_no ? 'No: ' + c.customer_no + ' · ' : ''}
+                                    ${c.id_no ? 'ID: ' + c.id_no : ''}
+                                </div>
+                            </div>
+                            <button class="btn-af success" data-load-cust="${i}">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>`).join('');
+                custBox.querySelectorAll('[data-load-cust]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.dataset.loadCust, 10);
+                        applyCustomer(customers[idx]);
+                        closeHistoryModal();
+                    });
+                });
+            }
+
+            const agentBox = getElement('hmAgentsBox');
+            const agents = AutofillStore.getAgents();
+            if (agentBox) {
+                agentBox.innerHTML = agents.length === 0
+                    ? `<div class="history-empty">No recent agents.</div>`
+                    : agents.map((a, i) => `
+                        <div class="history-row">
+                            <div>
+                                <div class="hr-name">${a.name}</div>
+                                <div class="hr-meta">${a.code || ''} ${a.role ? '· ' + a.role : ''}</div>
+                            </div>
+                            <button class="btn-af success" data-load-agent="${i}">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>`).join('');
+                agentBox.querySelectorAll('[data-load-agent]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.dataset.loadAgent, 10);
+                        applyAgent(agents[idx]);
+                        closeHistoryModal();
+                    });
+                });
+            }
+        }
+
+        function openHistoryModal() {
+            renderHistoryModal();
+            getElement('historyModalBackdrop')?.classList.add('show');
+        }
+        function closeHistoryModal() {
+            getElement('historyModalBackdrop')?.classList.remove('show');
+        }
+
+        function setupAutofillToolbar() {
+            getElement('afLoadOfficer')?.addEventListener('click', () => {
+                const o = AutofillStore.getOfficer();
+                if (!o) {
+                    showToast('No officer profile saved yet. Fill in your details and click "Save Officer".', 'info');
+                    return;
+                }
+                applyOfficerProfile(o);
+            });
+
+            getElement('afSaveOfficer')?.addEventListener('click', () => {
+                const p = captureOfficerProfile();
+                if (!p.name || !p.agent_code) {
+                    showToast('Please fill in your Name and Agent Code first.', 'error');
+                    return;
+                }
+                AutofillStore.saveOfficer(p);
+                refreshHistoryBadge();
+                showToast('Officer profile saved to this browser ✓', 'success');
+            });
+
+            getElement('afShowHistory')?.addEventListener('click', openHistoryModal);
+
+            getElement('afClearHistory')?.addEventListener('click', () => {
+                if (!confirm('Clear ALL browser history (officer, customers, agents)? This cannot be undone.')) return;
+                AutofillStore.clearOfficer();
+                AutofillStore.clearCustomers();
+                AutofillStore.clearAgents();
+                refreshHistoryBadge();
+                renderHistoryModal();
+                showToast('Browser history cleared', 'success');
+            });
+
+            getElement('hmLoadOfficer')?.addEventListener('click', () => {
+                const o = AutofillStore.getOfficer();
+                if (o) { applyOfficerProfile(o); closeHistoryModal(); }
+            });
+            getElement('hmClearCustomers')?.addEventListener('click', () => {
+                if (!confirm('Clear recent customers?')) return;
+                AutofillStore.clearCustomers();
+                renderHistoryModal();
+                refreshHistoryBadge();
+            });
+            getElement('hmClearAgents')?.addEventListener('click', () => {
+                if (!confirm('Clear recent agents?')) return;
+                AutofillStore.clearAgents();
+                renderHistoryModal();
+                refreshHistoryBadge();
+            });
+            getElement('hmClose')?.addEventListener('click', closeHistoryModal);
+            getElement('historyModalBackdrop')?.addEventListener('click', (e) => {
+                if (e.target.id === 'historyModalBackdrop') closeHistoryModal();
+            });
+        }
+
+        function installAutofillHooks() {
+            const previewEl = getElement('previewContent');
+            if (!previewEl) return;
+            let lastCount = state.reports.length;
+            const observer = new MutationObserver(() => {
+                if (state.reports.length > lastCount) {
+                    lastCount = state.reports.length;
+                    const lastReport = state.reports[state.reports.length - 1];
+                    if (lastReport?.data) autoSaveAfterGenerate(lastReport.data);
+                }
+            });
+            observer.observe(previewEl, { childList: true, subtree: true });
+        }
+
+        function initAutofill() {
+            setupAutofillToolbar();
+            setupAutofillSuggestions();
+            refreshHistoryBadge();
+            installAutofillHooks();
+            console.log('✨ Browser-only autofill initialized');
+        }
+
+        // ============================================================
         // ADMIN PANEL
         // ============================================================
         async function loadUsers() {
@@ -1960,6 +2545,7 @@
             setupPasswordFormListeners();
             setupAuditTabs();
             setupAuditListeners();
+            initAutofill();
 
             showToast('📍 GPS enabled · Manual entry mode', 'info');
         }
@@ -2083,7 +2669,6 @@
                 data.report_id = 'RPT-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
             }
 
-            // Map manual fields to backend expected names
             data.Name = data.customer_name || '';
             data.No = data.customer_id || '';
             data.ID_No = data.customer_id_no || '';
@@ -2252,7 +2837,6 @@
                 const box = getElement(id);
                 if (box) box.classList.remove('checked');
             });
-            clearPasteHelper();
             clearLocation();
             updateMeetingDatetime();
             showToast('Form reset', 'success');
@@ -2274,9 +2858,6 @@
             getElement('searchLocationBtn')?.addEventListener('click', searchLocation);
             getElement('clearLocationBtn')?.addEventListener('click', clearLocation);
             getElement('refreshLocationBtn')?.addEventListener('click', () => state.gpsManager?.refreshLocation());
-
-            getElement('parsePasteBtn')?.addEventListener('click', handleParsePaste);
-            getElement('clearPasteBtn')?.addEventListener('click', clearPasteHelper);
 
             getElement('adminPanelBtn')?.addEventListener('click', toggleAdminPanel);
             getElement('closeAdminPanel')?.addEventListener('click', () => getElement('adminPanel')?.classList.remove('active'));
