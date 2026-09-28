@@ -807,7 +807,7 @@ def create_invitation():
         expires_at=utcnow() + timedelta(days=7),
     ).save()
 
-    accept_url = f"{FRONTEND_URL}/accept-invite/{token}"
+    accept_url = f"{FRONTEND_URL}/index.html?invite={token}"
 
     try:
         if app.config["MAIL_USERNAME"] and app.config["MAIL_PASSWORD"]:
@@ -925,7 +925,7 @@ def resend_invitation():
         expires_at=utcnow() + timedelta(days=7),
     ).save()
 
-    accept_url = f"{FRONTEND_URL}/accept-invite/{token}"
+    accept_url = f"{FRONTEND_URL}/index.html?invite={token}"
     print(f"\n[INVITE] {email} -> {accept_url}\n")
     log_action(user, "invitation.resend", "invitation", invite.id, f"email={email}")
 
@@ -1206,7 +1206,7 @@ def admin_create_user():
         expires_at=utcnow() + timedelta(days=7),
     ).save()
 
-    accept_url = f"{FRONTEND_URL}/accept-invite/{token}"
+    accept_url = f"{FRONTEND_URL}/index.html?invite={token}"
     print(f"\n[INVITE] {email} -> {accept_url}\n")
     log_action(user, "user.create_invite", "user", new_user.id, f"email={email}, role={role}")
 
@@ -1272,7 +1272,7 @@ def admin_reset_password(email):
         expires_at=utcnow() + timedelta(days=7),
     ).save()
 
-    accept_url = f"{FRONTEND_URL}/accept-invite/{token}"
+    accept_url = f"{FRONTEND_URL}/index.html?invite={token}"
     print(f"\n[RESET] {email} -> {accept_url}\n")
     log_action(user, "user.reset_password", "user", target.id, f"email={email}")
 
