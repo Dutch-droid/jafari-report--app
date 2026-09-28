@@ -25,6 +25,57 @@
             --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
+
+        /* ===== Customer Signature, Selfie, OTP ===== */
+        .verification-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 12px;
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+        }
+        .verification-badge.full { background: #d1fae5; color: #065f46; }
+        .verification-badge.partial { background: #fef3c7; color: #92400e; }
+        .verification-badge.unverified { background: #fee2e2; color: #991b1b; }
+
+        .otp-panel {
+            background: #f0f9ff; border: 1px solid #bae6fd;
+            border-radius: 8px; padding: 16px; margin-top: 8px;
+        }
+        .otp-panel-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px;
+        }
+        .otp-panel-header .title {
+            font-weight: 700; color: #0369a1; font-size: 0.9rem;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .otp-status {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.75rem; font-weight: 600;
+            padding: 3px 10px; border-radius: 12px;
+        }
+        .otp-status.pending { background: #e0e7ff; color: #3730a3; }
+        .otp-status.sent { background: #fef3c7; color: #92400e; }
+        .otp-status.verified { background: #d1fae5; color: #065f46; }
+        .otp-row { display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; }
+        .otp-row input { flex: 1; }
+        .otp-code-input {
+            letter-spacing: 8px; font-size: 1.2rem; font-family: monospace;
+            text-align: center; padding: 12px; font-weight: 700;
+        }
+        .otp-hint { font-size: 0.75rem; color: var(--gray-600); margin-top: 6px; }
+
+        .selfie-widget {
+            background: #fef3c7; border: 1px solid #fcd34d;
+            border-radius: 8px; padding: 16px; margin-top: 8px;
+        }
+        .selfie-preview {
+            width: 100%; max-width: 320px; border-radius: 8px;
+            display: block; margin-top: 12px; border: 2px solid #fcd34d;
+        }
+        .selfie-gps-line {
+            font-size: 0.75rem; color: #92400e; margin-top: 8px;
+            font-family: monospace;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -90,10 +141,6 @@
         .password-requirements .req i.fa-check-circle { color: var(--success); }
         .password-requirements .req i.fa-circle { color: var(--gray-300); }
         .auth-footer { text-align: center; margin-top: 20px; font-size: 0.75rem; color: var(--gray-600); }
-        .auth-footer .admin-hint {
-            margin-top: 12px; padding: 10px; background: #f0fdf4;
-            border-radius: 8px; border: 1px solid #86efac; color: #065f46; font-size: 0.8rem;
-        }
 
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         .app-container { display: none; }
@@ -132,14 +179,6 @@
         .logout-btn { background: var(--danger); color: white; }
         .admin-panel-btn { background: var(--warning); color: var(--gray-800); font-weight: 600; }
         .logout-btn:hover, .admin-panel-btn:hover { opacity: 0.85; }
-
-        .mode-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: #eff6ff; color: #1e40af;
-            padding: 4px 12px; border-radius: 12px;
-            font-size: 0.7rem; font-weight: 600;
-            margin-top: 8px;
-        }
 
         .main-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 30px; margin-bottom: 30px; align-items: start; }
         @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
@@ -181,29 +220,6 @@
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
 
-
-        .manual-entry-hint {
-            background: #eff6ff;
-            border-left: 3px solid var(--secondary);
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            color: #1e40af;
-            margin-bottom: 12px;
-        }
-
-        .mode-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            background: #eff6ff;
-            color: #1e40af;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
         .connection-status {
             display: flex; align-items: center; gap: 8px;
             padding: 8px 12px; border-radius: 6px; font-size: 0.85rem;
@@ -211,22 +227,6 @@
             background: #eff6ff; color: #1e40af;
         }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; background: var(--success); }
-
-        .client-fetch-section { background: var(--gray-50); padding: 16px; border-radius: 8px; border: 2px dashed var(--gray-300); margin-bottom: 16px; }
-        .customer-info-display { background: white; border: 1px solid var(--gray-200); border-radius: 6px; padding: 12px; margin-top: 10px; }
-        .customer-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px; }
-        @media (max-width: 768px) { .customer-info-grid { grid-template-columns: 1fr; } }
-        .customer-info-grid .info-row { display: flex; padding: 4px 0; font-size: 0.85rem; border-bottom: 1px solid var(--gray-100); }
-        .customer-info-grid .info-label { font-weight: 600; width: 140px; color: var(--gray-600); flex-shrink: 0; }
-        .customer-info-grid .info-value.highlight { color: var(--success); font-weight: 600; }
-
-        .agent-info-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px;
-            margin-top: 8px; padding: 12px; background: #f0fdf4;
-            border: 1px solid #86efac; border-radius: 6px;
-        }
-        .agent-info-grid .agent-row { display: flex; padding: 4px 0; font-size: 0.85rem; }
-        .agent-info-grid .agent-label { font-weight: 600; width: 100px; color: var(--gray-600); flex-shrink: 0; }
 
         .signature-pad-container {
             border: 2px solid var(--gray-200); border-radius: 8px;
@@ -294,9 +294,6 @@
         .btn-fetch:hover { background: var(--primary-light); }
         .btn-fetch:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .input-with-button { display: flex; gap: 8px; }
-        .input-with-button input { flex: 1; }
-
         .btn-primary, .btn-secondary, .btn-success, .btn-danger {
             padding: 8px 16px; border: none; border-radius: 6px;
             font-weight: 600; cursor: pointer;
@@ -311,16 +308,6 @@
         .auto-filled { background: #ecfdf5 !important; border-color: #34d399 !important; }
         .gps-filled { background: #eff6ff !important; border-color: #3b82f6 !important; }
         .date-auto-filled { background: #fef3c7 !important; border-color: #fcd34d !important; }
-
-        .fetch-success {
-            background: #ecfdf5; border: 1px solid #34d399; border-radius: 6px;
-            padding: 8px 12px; margin-top: 8px; color: #065f46; font-size: 0.85rem; display: none;
-        }
-        .fetch-success.show { display: block; }
-
-        .progress-section { margin-top: 20px; }
-        .progress-bar { width: 100%; height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; margin: 15px 0; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--secondary), var(--primary)); transition: width 0.3s ease; }
 
         .toast {
             position: fixed; bottom: 20px; right: 20px;
@@ -523,7 +510,6 @@
             margin-left: 6px;
         }
 
-        /* Suggestion dropdown */
         .suggest-wrap { position: relative; }
         .suggest-list {
             position: absolute; top: 100%; left: 0; right: 0;
@@ -542,9 +528,7 @@
         .suggest-item:hover, .suggest-item.active {
             background: #eff6ff; color: var(--primary);
         }
-        .suggest-item .suggest-meta {
-            font-size: 0.72rem; color: var(--gray-600);
-        }
+        .suggest-item .suggest-meta { font-size: 0.72rem; color: var(--gray-600); }
 
         .history-modal-backdrop {
             position: fixed; inset: 0; background: rgba(0,0,0,0.5);
@@ -561,9 +545,7 @@
             color: var(--primary); margin-bottom: 4px;
             display: flex; align-items: center; gap: 8px;
         }
-        .history-modal .modal-sub {
-            font-size: 0.8rem; color: var(--gray-600); margin-bottom: 16px;
-        }
+        .history-modal .modal-sub { font-size: 0.8rem; color: var(--gray-600); margin-bottom: 16px; }
         .history-section-title {
             font-size: 0.85rem; font-weight: 700; color: var(--primary);
             margin: 16px 0 8px; padding-bottom: 4px;
@@ -703,7 +685,6 @@
                 </div>
                 <button type="submit" class="auth-btn" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
             </form>
-      
         </div>
     </div>
 
@@ -715,7 +696,7 @@
                     <img src="https://jafaricredit.co.ke/wp-content/themes/jafari-website-theme/assets/darklogo.webp" alt="Jafari Credit Logo">
                     <h1>Customer Meeting Report</h1>
                 </div>
-               
+
                 <div class="user-info">
                     <div class="user-badge">
                         <i class="fas fa-user-circle"></i>
@@ -753,9 +734,9 @@
                         <input type="email" id="addUserEmail" placeholder="Enter user email">
                         <input type="text" id="addUserName" placeholder="Full name (optional)">
                         <select id="addUserRole">
-                            <option value="user">User</option>
-                            <option value="manager">Manager</option>
-                            <option value="viewer">Viewer</option>
+                            <option value="admin_agent">Admin Agent</option>
+                            <option value="branch_manager">Branch Manager</option>
+                            <option value="auditor">Auditor</option>
                         </select>
                         <button class="btn-add" id="addUserBtn"><i class="fas fa-paper-plane"></i> Send Invitation</button>
                     </div>
@@ -795,7 +776,7 @@
                                     <th>Loan</th>
                                     <th>Branch</th>
                                     <th>Report ID</th>
-                                    <th>Signatures</th>
+                                    <th>Verification</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -812,7 +793,6 @@
                 <div class="form-card">
                     <div class="card-header">
                         <h2><i class="fas fa-edit"></i> Meeting Report Form</h2>
-                        <span class="mode-indicator"><i class="fas fa-keyboard"></i> Manual Entry</span>
                     </div>
 
                     <form id="reportForm" class="report-form">
@@ -926,7 +906,7 @@
                             </div>
                         </div>
 
-                        <!-- CUSTOMER INFORMATION (Manual Entry) -->
+                        <!-- CUSTOMER INFORMATION -->
                         <div class="form-section">
                             <div class="form-section-title"><i class="fas fa-user"></i> Customer Information</div>
 
@@ -982,7 +962,46 @@
                                     <div class="suggest-list" id="suggest_sales_lead"></div>
                                 </div>
                             </div>
-                           
+                        </div>
+
+                        <!-- ===== OTP VERIFICATION ===== -->
+                        <div class="form-section" id="otpSection">
+                            <div class="form-section-title">
+                                <i class="fas fa-shield-alt"></i> Customer Verification (OTP)
+                            </div>
+                            <p class="otp-hint" style="margin-bottom:10px;">
+                                Send a one-time code to the customer's phone. Ask them to read it to you.
+                                This proves the customer was physically present at the meeting.
+                            </p>
+
+                            <div class="otp-panel">
+                                <div class="otp-panel-header">
+                                    <span class="title"><i class="fas fa-mobile-alt"></i> SMS Verification</span>
+                                    <span class="otp-status pending" id="otpStatusBadge">
+                                        <i class="fas fa-circle"></i> Not verified
+                                    </span>
+                                </div>
+
+                                <div class="otp-row">
+                                    <input type="tel" id="otp_phone" placeholder="+254 700 000000"
+                                           style="padding:8px 12px; border:2px solid var(--gray-200); border-radius:6px;">
+                                    <button type="button" class="btn-fetch" id="otpSendBtn">
+                                        <i class="fas fa-paper-plane"></i> Send Code
+                                    </button>
+                                </div>
+
+                                <div class="otp-row" id="otpCodeRow" style="display:none;">
+                                    <input type="text" id="otp_code" class="otp-code-input"
+                                           placeholder="000000" maxlength="6" inputmode="numeric">
+                                    <button type="button" class="btn-fetch" id="otpVerifyBtn"
+                                            style="background:var(--success);">
+                                        <i class="fas fa-check"></i> Verify
+                                    </button>
+                                </div>
+
+                                <div id="otpMessage" class="otp-hint"></div>
+                                <div id="otpCountdown" class="otp-hint" style="display:none;"></div>
+                            </div>
                         </div>
 
                         <!-- Map -->
@@ -1032,6 +1051,33 @@
                                     <option value="yes">Yes, meeting took place</option>
                                     <option value="no">No</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <!-- ===== GEOTAGGED SELFIE ===== -->
+                        <div class="form-section" id="selfieSection">
+                            <div class="form-section-title">
+                                <i class="fas fa-camera"></i> Geotagged Selfie with Customer
+                            </div>
+                            <p class="otp-hint" style="margin-bottom:10px;">
+                                Take a live photo of yourself with the customer. GPS and timestamp are stamped automatically.
+                                This is required for a full verification.
+                            </p>
+
+                            <div class="selfie-widget">
+                                <input type="file" id="selfieInput" accept="image/*" capture="user" style="display:none;">
+                                <button type="button" class="btn-fetch" id="selfieCaptureBtn"
+                                        style="background:var(--warning); color:var(--gray-800); font-weight:700;">
+                                    <i class="fas fa-camera"></i> Take Selfie with Customer
+                                </button>
+                                <button type="button" class="btn-fetch" id="selfieRetakeBtn"
+                                        style="display:none; background:var(--gray-200); color:var(--gray-800);">
+                                    <i class="fas fa-redo"></i> Retake
+                                </button>
+
+                                <img id="selfiePreview" class="selfie-preview" style="display:none;" alt="Selfie preview">
+
+                                <div class="selfie-gps-line" id="selfieMeta" style="display:none;"></div>
                             </div>
                         </div>
 
@@ -1113,6 +1159,45 @@
                                         <label for="agentConfirm">I confirm the <strong>Sales Agent</strong> has signed</label>
                                     </div>
                                 </div>
+
+                                <div class="form-group full" style="grid-column: 1 / -1; margin-top: 16px; border-top: 2px dashed var(--gray-200); padding-top: 16px;">
+                                    <label>
+                                        <i class="fas fa-user-check" style="color:var(--success);"></i>
+                                        Customer Signature (customer signs here on this device)
+                                    </label>
+                                    <div class="signature-pad-container">
+                                        <canvas id="customerSignatureCanvas"></canvas>
+                                        <div class="signature-placeholder" id="customerSignaturePlaceholder"><i class="fas fa-pen"></i> Customer Sign Here</div>
+                                    </div>
+                                    <div class="signature-actions">
+                                        <button type="button" class="btn-signature clear" id="clearCustomerSignature"><i class="fas fa-eraser"></i> Clear</button>
+                                        <button type="button" class="btn-signature undo" id="undoCustomerSignature"><i class="fas fa-undo"></i> Undo</button>
+                                        <button type="button" class="btn-signature download" id="downloadCustomerSignature"><i class="fas fa-download"></i> Download</button>
+                                    </div>
+                                    <div class="signature-status" id="customerSignatureStatus"><span class="not-signed">✗ Not signed</span></div>
+                                    <div class="signature-confirmation" id="customerConfirmBox">
+                                        <input type="checkbox" id="customerConfirm">
+                                        <label for="customerConfirm">I confirm the <strong>Customer</strong> has signed</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== Override when OTP is unavailable ===== -->
+                        <div class="form-section" id="unverifiedSection">
+                            <div class="form-section-title">
+                                <i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i>
+                                Cannot verify customer?
+                            </div>
+                            <p class="otp-hint" style="margin-bottom:10px;">
+                                If the customer cannot receive an SMS right now, provide a reason below.
+                                The report will be saved with a <strong>partial</strong> or <strong>unverified</strong> status,
+                                visible to admins in the audit log.
+                            </p>
+                            <div class="form-group">
+                                <label for="unverified_reason">Unverified reason (leave blank if customer will be verified)</label>
+                                <input type="text" id="unverified_reason"
+                                       placeholder="e.g. Customer phone not available at the time of visit">
                             </div>
                         </div>
 
@@ -1154,7 +1239,49 @@
         // ============================================================
         // CONFIGURATION
         // ============================================================
-        const API_BASE_URL = 'https://jafari-meeting-report.fly.dev/api';
+         const API_BASE_URL = 'https://jafari-meeting-report.fly.dev/api';
+        const AFRICA_NAIROBI_TZ = 'Africa/Nairobi';
+
+        // Helper: format ISO date string to display in EAT.
+        // Handles cases where the backend sent naive UTC (no Z) — appends Z.
+        function formatDateEAT(isoString, options = {}) {
+            if (!isoString) return 'N/A';
+            let s = String(isoString);
+            // If no timezone marker, assume it's UTC
+            if (!/[Zz]$/.test(s) && !/[+-]\d{2}:\d{2}$/.test(s)) {
+                s = s + 'Z';
+            }
+            try {
+                const d = new Date(s);
+                if (isNaN(d.getTime())) return 'N/A';
+                return d.toLocaleString('en-KE', {
+                    year: 'numeric', month: 'short', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit',
+                    timeZone: AFRICA_NAIROBI_TZ,
+                    ...options
+                });
+            } catch (e) {
+                return 'N/A';
+            }
+        }
+
+        function formatTimeEAT(isoString, options = {}) {
+            if (!isoString) return 'N/A';
+            let s = String(isoString);
+            if (!/[Zz]$/.test(s) && !/[+-]\d{2}:\d{2}$/.test(s)) {
+                s = s + 'Z';
+            }
+            try {
+                const d = new Date(s);
+                if (isNaN(d.getTime())) return 'N/A';
+                return d.toLocaleTimeString('en-KE', {
+                    timeZone: AFRICA_NAIROBI_TZ,
+                    ...options
+                });
+            } catch (e) {
+                return 'N/A';
+            }
+        }
 
         const state = {
             reports: [],
@@ -1164,11 +1291,23 @@
             marker: null,
             teamLeaderSignaturePad: null,
             agentSignaturePad: null,
+            customerSignaturePad: null,
             gpsManager: null,
             isAuthenticated: false,
             user: null,
             isAdmin: false,
-            invitationToken: null
+            invitationToken: null,
+
+            otpVerified: false,
+            otpPhone: null,
+            otpVerificationToken: null,
+            otpVerifiedAt: null,
+            otpCountdownInterval: null,
+            selfieImage: null,
+            selfieGps: null,
+            selfieTimestamp: null,
+            customerSignedAt: null,
+            customerSignedGps: null
         };
 
         function getElement(id) { return document.getElementById(id); }
@@ -1194,6 +1333,12 @@
                 toast.style.opacity = '0';
                 setTimeout(() => toast.remove(), 300);
             }, 4000);
+        }
+
+        function userIsAdmin(u) {
+            if (!u) return false;
+            if (u.is_admin === true) return true;
+            return ['super_admin', 'admin_agent'].includes(u.role);
         }
 
         function getTodayDateString() {
@@ -1259,7 +1404,7 @@
                 const result = await response.json();
                 hideLoading();
 
-                if (!result.success) {
+                if (!result.success && !result.email) {
                     showToast(result.error || 'Invalid invitation link', 'error');
                     showLoginPage();
                     return false;
@@ -1267,7 +1412,7 @@
 
                 state.invitationToken = token;
                 const setupEmail = getElement('setupEmail');
-                if (setupEmail) setupEmail.textContent = result.email;
+                if (setupEmail) setupEmail.textContent = result.email || '';
 
                 getElement('loginPage').classList.remove('active');
                 getElement('setupPasswordPage').classList.add('active');
@@ -1400,16 +1545,17 @@
                 const result = await response.json();
                 hideLoading();
 
-                if (result.success) {
+                const success = result.success === true || (result.token && result.user);
+                if (success) {
                     localStorage.setItem('jafari_token', result.token);
                     localStorage.setItem('jafari_user', JSON.stringify(result.user));
                     state.isAuthenticated = true;
                     state.user = result.user;
-                    state.isAdmin = result.user.is_admin || false;
+                    state.isAdmin = userIsAdmin(result.user);
                     showApp(result.user);
                     showToast(`Welcome ${result.user.name || result.user.email}!`, 'success');
                 } else {
-                    if (errorDiv) { errorDiv.classList.add('show'); if (errorMsg) errorMsg.textContent = result.error || 'Invalid credentials'; }
+                    if (errorDiv) { errorDiv.classList.add('show'); if (errorMsg) errorMsg.textContent = result.error || result.message || 'Invalid credentials'; }
                 }
             } catch (error) {
                 hideLoading();
@@ -1428,13 +1574,19 @@
             if (userBadge) userBadge.textContent = user.name || user.email || 'User';
 
             const roleBadge = getElement('userRoleBadge');
+            const isAdmin = userIsAdmin(user);
             if (roleBadge) {
-                if (user.is_admin) { roleBadge.textContent = '👑 Admin'; roleBadge.classList.add('admin'); }
-                else { roleBadge.textContent = user.role || 'User'; roleBadge.classList.remove('admin'); }
+                if (isAdmin) {
+                    roleBadge.textContent = '👑 ' + (user.role === 'super_admin' ? 'Super Admin' : 'Admin');
+                    roleBadge.classList.add('admin');
+                } else {
+                    roleBadge.textContent = (user.role || 'User').replace('_', ' ');
+                    roleBadge.classList.remove('admin');
+                }
             }
 
             const adminPanelBtn = getElement('adminPanelBtn');
-            if (adminPanelBtn) adminPanelBtn.style.display = user.is_admin ? 'inline-flex' : 'none';
+            if (adminPanelBtn) adminPanelBtn.style.display = isAdmin ? 'inline-flex' : 'none';
 
             const createdByEl = getElement('created_by');
             if (createdByEl && user.name) { createdByEl.value = user.name; createdByEl.classList.add('auto-filled'); }
@@ -1469,7 +1621,7 @@
                     const user = JSON.parse(savedUser);
                     state.isAuthenticated = true;
                     state.user = user;
-                    state.isAdmin = user.is_admin || false;
+                    state.isAdmin = userIsAdmin(user);
                     showApp(user);
                     return true;
                 } catch (e) { return false; }
@@ -1731,7 +1883,239 @@
         }
 
         // ============================================================
-        // BROWSER-ONLY AUTOFILL (localStorage)
+        // OTP VERIFICATION MANAGER
+        // ============================================================
+        const OtpManager = {
+            send: async function (phone) {
+                const response = await apiFetch(`${API_BASE_URL}/otp/send`, {
+                    method: 'POST',
+                    body: JSON.stringify({ phone })
+                });
+                const result = await response.json();
+                return result;
+            },
+            verify: async function (phone, code) {
+                const response = await apiFetch(`${API_BASE_URL}/otp/verify`, {
+                    method: 'POST',
+                    body: JSON.stringify({ phone, code })
+                });
+                const result = await response.json();
+                return result;
+            }
+        };
+
+        function setOtpStatus(status, text) {
+            const badge = getElement('otpStatusBadge');
+            if (!badge) return;
+            badge.className = `otp-status ${status}`;
+            const icon = status === 'verified' ? 'fa-check-circle' :
+                         status === 'sent' ? 'fa-clock' : 'fa-circle';
+            badge.innerHTML = `<i class="fas ${icon}"></i> ${text}`;
+        }
+
+        function startOtpCountdown(minutes) {
+            let remaining = minutes * 60;
+            const el = getElement('otpCountdown');
+            if (!el) return;
+            el.style.display = 'block';
+
+            if (state.otpCountdownInterval) clearInterval(state.otpCountdownInterval);
+            state.otpCountdownInterval = setInterval(() => {
+                remaining -= 1;
+                if (remaining <= 0) {
+                    clearInterval(state.otpCountdownInterval);
+                    state.otpCountdownInterval = null;
+                    el.textContent = 'Code expired. Send a new one.';
+                    return;
+                }
+                const m = Math.floor(remaining / 60);
+                const s = remaining % 60;
+                el.textContent = `⏱ Code expires in ${m}:${String(s).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        async function handleOtpSend() {
+            const phone = (getElement('otp_phone')?.value || '').trim();
+            if (!phone) {
+                showToast('Please enter the customer phone number.', 'error');
+                return;
+            }
+
+            const btn = getElement('otpSendBtn');
+            if (btn) { btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Sending...'; }
+
+            try {
+                const result = await OtpManager.send(phone);
+                if (!result.success) {
+                    showToast(result.error || 'Failed to send code', 'error');
+                    setOtpStatus('pending', 'Not verified');
+                    return;
+                }
+
+                const codeRow = getElement('otpCodeRow');
+                if (codeRow) codeRow.style.display = 'flex';
+
+                setOtpStatus('sent', 'Code sent');
+                const msg = getElement('otpMessage');
+                if (msg) {
+                    const isAdminUser = state.isAdmin || userIsAdmin(state.user);
+                    let html = `📱 ${result.message || 'Code sent'}`;
+                    if (isAdminUser && result.devCode) {
+                        html += ` <br><small>Dev code (admin only): <strong>${result.devCode}</strong></small>`;
+                    }
+                    msg.innerHTML = html;
+                }
+                startOtpCountdown(result.expiresInMinutes || 10);
+                showToast('OTP sent to customer', 'success');
+            } catch (e) {
+                showToast('Error sending OTP', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Code'; }
+            }
+        }
+
+        async function handleOtpVerify() {
+            const phone = (getElement('otp_phone')?.value || '').trim();
+            const code = (getElement('otp_code')?.value || '').trim();
+            if (!phone || !code) {
+                showToast('Enter both phone and code.', 'error');
+                return;
+            }
+
+            const btn = getElement('otpVerifyBtn');
+            if (btn) { btn.disabled = true; btn.innerHTML = '<span class="loading-spinner"></span> Verifying...'; }
+
+            try {
+                const result = await OtpManager.verify(phone, code);
+                if (!result.success) {
+                    showToast(result.error || 'Invalid code', 'error');
+                    return;
+                }
+
+                state.otpVerified = true;
+                state.otpPhone = result.phone;
+                state.otpVerificationToken = result.verificationToken;
+                state.otpVerifiedAt = result.verifiedAt;
+
+                setOtpStatus('verified', 'Verified');
+                const msg = getElement('otpMessage');
+                if (msg) msg.innerHTML = `✅ Customer verified at ${formatTimeEAT(result.verifiedAt)}`;
+
+                const codeRow = getElement('otpCodeRow');
+                if (codeRow) codeRow.style.display = 'none';
+
+                if (state.otpCountdownInterval) {
+                    clearInterval(state.otpCountdownInterval);
+                    state.otpCountdownInterval = null;
+                }
+                const cd = getElement('otpCountdown');
+                if (cd) cd.style.display = 'none';
+
+                showToast('Customer verified!', 'success');
+            } catch (e) {
+                showToast('Error verifying OTP', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> Verify'; }
+            }
+        }
+
+        // ============================================================
+        // SELFIE CAPTURE MANAGER
+        // ============================================================
+        function getCurrentGpsString() {
+            const el = getElement('gps_locator');
+            return el && el.value ? el.value.trim() : null;
+        }
+
+        function handleSelfieCapture() {
+            const input = getElement('selfieInput');
+            if (input) input.click();
+        }
+
+        function handleSelfieFile(evt) {
+            const file = evt.target.files && evt.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Selfie too large (max 5 MB). Take a smaller photo.', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const maxW = 800;
+                    const scale = Math.min(1, maxW / img.width);
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+                    state.selfieImage = dataUrl;
+                    state.selfieGps = getCurrentGpsString();
+                    state.selfieTimestamp = new Date().toISOString();
+
+                    const preview = getElement('selfiePreview');
+                    if (preview) {
+                        preview.src = dataUrl;
+                        preview.style.display = 'block';
+                    }
+                    const meta = getElement('selfieMeta');
+                    if (meta) {
+                        meta.style.display = 'block';
+                        meta.innerHTML =
+                            `📍 GPS: ${state.selfieGps || '(not captured — allow location)'}<br>` +
+                            `🕒 Time: ${formatDateEAT(state.selfieTimestamp)}`;
+                    }
+
+                    const cap = getElement('selfieCaptureBtn');
+                    if (cap) cap.style.display = 'none';
+                    const retake = getElement('selfieRetakeBtn');
+                    if (retake) retake.style.display = 'inline-flex';
+
+                    showToast('Selfie captured with geotag ✓', 'success');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handleSelfieRetake() {
+            state.selfieImage = null;
+            state.selfieGps = null;
+            state.selfieTimestamp = null;
+            const preview = getElement('selfiePreview');
+            if (preview) { preview.src = ''; preview.style.display = 'none'; }
+            const meta = getElement('selfieMeta');
+            if (meta) meta.style.display = 'none';
+            const cap = getElement('selfieCaptureBtn');
+            if (cap) cap.style.display = 'inline-flex';
+            const retake = getElement('selfieRetakeBtn');
+            if (retake) retake.style.display = 'none';
+            const input = getElement('selfieInput');
+            if (input) input.value = '';
+        }
+
+        function setupVerificationListeners() {
+            getElement('otpSendBtn')?.addEventListener('click', handleOtpSend);
+            getElement('otpVerifyBtn')?.addEventListener('click', handleOtpVerify);
+            getElement('selfieCaptureBtn')?.addEventListener('click', handleSelfieCapture);
+            getElement('selfieRetakeBtn')?.addEventListener('click', handleSelfieRetake);
+            getElement('selfieInput')?.addEventListener('change', handleSelfieFile);
+
+            const custPhone = getElement('customer_phone');
+            const otpPhone = getElement('otp_phone');
+            if (custPhone && otpPhone) {
+                custPhone.addEventListener('blur', () => {
+                    if (!otpPhone.value && custPhone.value) otpPhone.value = custPhone.value;
+                });
+            }
+        }
+
+        // ============================================================
+        // AUTOFILL / HISTORY (localStorage)
         // ============================================================
         const LS_KEYS = {
             OFFICER:   'jafari_officer_profile',
@@ -1747,28 +2131,20 @@
                     if (!raw) return fallback;
                     const parsed = JSON.parse(raw);
                     return parsed ?? fallback;
-                } catch (e) {
-                    console.warn('AutofillStore read error:', key, e);
-                    return fallback;
-                }
+                } catch (e) { return fallback; }
             },
             _write(key, value) {
                 try {
                     localStorage.setItem(key, JSON.stringify(value));
                     return true;
-                } catch (e) {
-                    console.warn('AutofillStore write error:', key, e);
-                    return false;
-                }
+                } catch (e) { return false; }
             },
-
             getOfficer() { return this._read(LS_KEYS.OFFICER, null); },
             saveOfficer(profile) {
                 profile.saved_at = new Date().toISOString();
                 return this._write(LS_KEYS.OFFICER, profile);
             },
             clearOfficer() { localStorage.removeItem(LS_KEYS.OFFICER); },
-
             getCustomers() { return this._read(LS_KEYS.CUSTOMERS, []); },
             pushCustomer(customer) {
                 if (!customer || !customer.name) return;
@@ -1779,11 +2155,9 @@
                 const newKey = key(customer);
                 const filtered = list.filter(c => key(c) !== newKey);
                 filtered.unshift({ ...customer, saved_at: new Date().toISOString() });
-                const trimmed = filtered.slice(0, HISTORY_MAX);
-                this._write(LS_KEYS.CUSTOMERS, trimmed);
+                this._write(LS_KEYS.CUSTOMERS, filtered.slice(0, HISTORY_MAX));
             },
             clearCustomers() { localStorage.removeItem(LS_KEYS.CUSTOMERS); },
-
             getAgents() { return this._read(LS_KEYS.AGENTS, []); },
             pushAgent(agent) {
                 if (!agent || !agent.name) return;
@@ -1791,11 +2165,9 @@
                 const key = (a) => (a.name || '').toLowerCase().trim();
                 const filtered = list.filter(a => key(a) !== key(agent));
                 filtered.unshift({ ...agent, saved_at: new Date().toISOString() });
-                const trimmed = filtered.slice(0, HISTORY_MAX);
-                this._write(LS_KEYS.AGENTS, trimmed);
+                this._write(LS_KEYS.AGENTS, filtered.slice(0, HISTORY_MAX));
             },
             clearAgents() { localStorage.removeItem(LS_KEYS.AGENTS); },
-
             counts() {
                 return {
                     officer: this.getOfficer() ? 1 : 0,
@@ -1841,12 +2213,7 @@
             const raw = (getElement('kyc_verified_by')?.value || '').trim();
             if (!raw) return null;
             const parsed = parseAgentString(raw);
-            return {
-                name: parsed.name,
-                code: parsed.code,
-                role: getElement('user_role')?.value || '',
-                raw: raw
-            };
+            return { name: parsed.name, code: parsed.code, role: getElement('user_role')?.value || '', raw: raw };
         }
 
         function applyOfficerProfile(profile) {
@@ -1872,10 +2239,7 @@
             if (!c) return;
             const set = (id, val) => {
                 const el = getElement(id);
-                if (el && val) {
-                    el.value = val;
-                    el.classList.add('auto-filled');
-                }
+                if (el && val) { el.value = val; el.classList.add('auto-filled'); }
             };
             set('customer_name', c.name);
             set('customer_id', c.customer_no);
@@ -1913,14 +2277,11 @@
 
         function autoSaveAfterGenerate(formData) {
             const officer = captureOfficerProfile();
-            if (officer.name && officer.agent_code) {
-                AutofillStore.saveOfficer(officer);
-            }
+            if (officer.name && officer.agent_code) AutofillStore.saveOfficer(officer);
             const cust = captureCustomer();
             if (cust.name) AutofillStore.pushCustomer(cust);
             const agent = captureAgent();
             if (agent && agent.name) AutofillStore.pushAgent(agent);
-
             refreshHistoryBadge();
         }
 
@@ -1950,58 +2311,36 @@
             const refresh = () => {
                 const q = input.value.toLowerCase().trim();
                 const all = getItems();
-                const filtered = q
-                    ? all.filter(x => JSON.stringify(x).toLowerCase().includes(q))
-                    : all;
+                const filtered = q ? all.filter(x => JSON.stringify(x).toLowerCase().includes(q)) : all;
                 open(filtered.slice(0, 8));
             };
 
             input.addEventListener('focus', refresh);
             input.addEventListener('input', refresh);
             input.addEventListener('blur', () => setTimeout(close, 150));
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') close();
-            });
+            input.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
         }
 
         function setupAutofillSuggestions() {
-            attachSuggestions(
-                'customer_name', 'suggest_customer_name',
-                () => AutofillStore.getCustomers(),
-                (c) => applyCustomer(c),
-                (c) => `<span><strong>${c.name || '(no name)'}</strong></span>
-                        <span class="suggest-meta">${c.customer_no || c.id_no || ''}</span>`
-            );
+            attachSuggestions('customer_name', 'suggest_customer_name',
+                () => AutofillStore.getCustomers(), (c) => applyCustomer(c),
+                (c) => `<span><strong>${c.name || '(no name)'}</strong></span><span class="suggest-meta">${c.customer_no || c.id_no || ''}</span>`);
 
-            attachSuggestions(
-                'customer_id', 'suggest_customer_id',
-                () => AutofillStore.getCustomers(),
-                (c) => applyCustomer(c),
-                (c) => `<span><strong>${c.customer_no || '(no number)'}</strong>
-                            <span class="suggest-meta"> — ${c.name || ''}</span></span>`
-            );
+            attachSuggestions('customer_id', 'suggest_customer_id',
+                () => AutofillStore.getCustomers(), (c) => applyCustomer(c),
+                (c) => `<span><strong>${c.customer_no || '(no number)'}</strong><span class="suggest-meta"> — ${c.name || ''}</span></span>`);
 
-            attachSuggestions(
-                'kyc_verified_by', 'suggest_agent',
-                () => AutofillStore.getAgents(),
-                (a) => applyAgent(a),
-                (a) => `<span><strong>${a.name}</strong>
-                            ${a.code ? `<span class="suggest-meta"> (${a.code})</span>` : ''}</span>`
-            );
+            attachSuggestions('kyc_verified_by', 'suggest_agent',
+                () => AutofillStore.getAgents(), (a) => applyAgent(a),
+                (a) => `<span><strong>${a.name}</strong>${a.code ? `<span class="suggest-meta"> (${a.code})</span>` : ''}</span>`);
 
-            attachSuggestions(
-                'customer_sales_lead', 'suggest_sales_lead',
+            attachSuggestions('customer_sales_lead', 'suggest_sales_lead',
                 () => AutofillStore.getAgents(),
                 (a) => {
                     const el = getElement('customer_sales_lead');
-                    if (el) {
-                        el.value = a.code || a.name;
-                        el.classList.add('auto-filled');
-                    }
+                    if (el) { el.value = a.code || a.name; el.classList.add('auto-filled'); }
                 },
-                (a) => `<span><strong>${a.code || a.name}</strong>
-                            <span class="suggest-meta"> — ${a.name}</span></span>`
-            );
+                (a) => `<span><strong>${a.code || a.name}</strong><span class="suggest-meta"> — ${a.name}</span></span>`);
         }
 
         function renderHistoryModal() {
@@ -2009,12 +2348,7 @@
             const officer = AutofillStore.getOfficer();
             if (officerBox) {
                 officerBox.innerHTML = officer
-                    ? `<div class="history-row">
-                           <div>
-                               <div class="hr-name">${officer.name || '(no name)'}</div>
-                               <div class="hr-meta">${officer.agent_code || ''} · ${officer.role || ''}</div>
-                           </div>
-                       </div>`
+                    ? `<div class="history-row"><div><div class="hr-name">${officer.name || '(no name)'}</div><div class="hr-meta">${officer.agent_code || ''} · ${officer.role || ''}</div></div></div>`
                     : `<div class="history-empty">No officer profile saved yet.</div>`;
             }
 
@@ -2025,16 +2359,9 @@
                     ? `<div class="history-empty">No recent customers.</div>`
                     : customers.map((c, i) => `
                         <div class="history-row">
-                            <div>
-                                <div class="hr-name">${c.name || '(no name)'}</div>
-                                <div class="hr-meta">
-                                    ${c.customer_no ? 'No: ' + c.customer_no + ' · ' : ''}
-                                    ${c.id_no ? 'ID: ' + c.id_no : ''}
-                                </div>
-                            </div>
-                            <button class="btn-af success" data-load-cust="${i}">
-                                <i class="fas fa-download"></i>
-                            </button>
+                            <div><div class="hr-name">${c.name || '(no name)'}</div>
+                            <div class="hr-meta">${c.customer_no ? 'No: ' + c.customer_no + ' · ' : ''}${c.id_no ? 'ID: ' + c.id_no : ''}</div></div>
+                            <button class="btn-af success" data-load-cust="${i}"><i class="fas fa-download"></i></button>
                         </div>`).join('');
                 custBox.querySelectorAll('[data-load-cust]').forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -2052,13 +2379,8 @@
                     ? `<div class="history-empty">No recent agents.</div>`
                     : agents.map((a, i) => `
                         <div class="history-row">
-                            <div>
-                                <div class="hr-name">${a.name}</div>
-                                <div class="hr-meta">${a.code || ''} ${a.role ? '· ' + a.role : ''}</div>
-                            </div>
-                            <button class="btn-af success" data-load-agent="${i}">
-                                <i class="fas fa-download"></i>
-                            </button>
+                            <div><div class="hr-name">${a.name}</div><div class="hr-meta">${a.code || ''} ${a.role ? '· ' + a.role : ''}</div></div>
+                            <button class="btn-af success" data-load-agent="${i}"><i class="fas fa-download"></i></button>
                         </div>`).join('');
                 agentBox.querySelectorAll('[data-load-agent]').forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -2070,62 +2392,40 @@
             }
         }
 
-        function openHistoryModal() {
-            renderHistoryModal();
-            getElement('historyModalBackdrop')?.classList.add('show');
-        }
-        function closeHistoryModal() {
-            getElement('historyModalBackdrop')?.classList.remove('show');
-        }
+        function openHistoryModal() { renderHistoryModal(); getElement('historyModalBackdrop')?.classList.add('show'); }
+        function closeHistoryModal() { getElement('historyModalBackdrop')?.classList.remove('show'); }
 
         function setupAutofillToolbar() {
             getElement('afLoadOfficer')?.addEventListener('click', () => {
                 const o = AutofillStore.getOfficer();
-                if (!o) {
-                    showToast('No officer profile saved yet. Fill in your details and click "Save Officer".', 'info');
-                    return;
-                }
+                if (!o) { showToast('No officer profile saved yet.', 'info'); return; }
                 applyOfficerProfile(o);
             });
-
             getElement('afSaveOfficer')?.addEventListener('click', () => {
                 const p = captureOfficerProfile();
-                if (!p.name || !p.agent_code) {
-                    showToast('Please fill in your Name and Agent Code first.', 'error');
-                    return;
-                }
+                if (!p.name || !p.agent_code) { showToast('Please fill in your Name and Agent Code first.', 'error'); return; }
                 AutofillStore.saveOfficer(p);
                 refreshHistoryBadge();
                 showToast('Officer profile saved to this browser ✓', 'success');
             });
-
             getElement('afShowHistory')?.addEventListener('click', openHistoryModal);
-
             getElement('afClearHistory')?.addEventListener('click', () => {
-                if (!confirm('Clear ALL browser history (officer, customers, agents)? This cannot be undone.')) return;
-                AutofillStore.clearOfficer();
-                AutofillStore.clearCustomers();
-                AutofillStore.clearAgents();
-                refreshHistoryBadge();
-                renderHistoryModal();
+                if (!confirm('Clear ALL browser history (officer, customers, agents)?')) return;
+                AutofillStore.clearOfficer(); AutofillStore.clearCustomers(); AutofillStore.clearAgents();
+                refreshHistoryBadge(); renderHistoryModal();
                 showToast('Browser history cleared', 'success');
             });
-
             getElement('hmLoadOfficer')?.addEventListener('click', () => {
                 const o = AutofillStore.getOfficer();
                 if (o) { applyOfficerProfile(o); closeHistoryModal(); }
             });
             getElement('hmClearCustomers')?.addEventListener('click', () => {
                 if (!confirm('Clear recent customers?')) return;
-                AutofillStore.clearCustomers();
-                renderHistoryModal();
-                refreshHistoryBadge();
+                AutofillStore.clearCustomers(); renderHistoryModal(); refreshHistoryBadge();
             });
             getElement('hmClearAgents')?.addEventListener('click', () => {
                 if (!confirm('Clear recent agents?')) return;
-                AutofillStore.clearAgents();
-                renderHistoryModal();
-                refreshHistoryBadge();
+                AutofillStore.clearAgents(); renderHistoryModal(); refreshHistoryBadge();
             });
             getElement('hmClose')?.addEventListener('click', closeHistoryModal);
             getElement('historyModalBackdrop')?.addEventListener('click', (e) => {
@@ -2152,7 +2452,6 @@
             setupAutofillSuggestions();
             refreshHistoryBadge();
             installAutofillHooks();
-            console.log('✨ Browser-only autofill initialized');
         }
 
         // ============================================================
@@ -2162,9 +2461,9 @@
             try {
                 const response = await apiFetch(`${API_BASE_URL}/admin/users`);
                 const result = await response.json();
-                if (result.success) {
-                    renderUserList(result.data);
-                    updateStats(result.data);
+                if (result.success || Array.isArray(result.data)) {
+                    renderUserList(result.data || result.users || []);
+                    updateStats(result.data || result.users || []);
                 }
             } catch (error) { showToast('Error loading users', 'error'); }
         }
@@ -2177,14 +2476,14 @@
                 return;
             }
             container.innerHTML = users.map(user => {
-                const isAdmin = user.is_admin || false;
+                const isAdmin = userIsAdmin(user);
                 const isCurrentUser = user.email === state.user?.email;
-                const hasPassword = user.password_set !== false;
+                const hasPassword = user.hasPassword !== false && user.password_set !== false;
                 const isPending = !hasPassword || user.status === 'pending';
                 const isInactive = user.status === 'inactive';
                 let roleClass = 'user-role';
-                let roleText = user.role || 'User';
-                if (isAdmin) { roleClass += ' admin-role'; roleText = '👑 Admin'; }
+                let roleText = (user.role || 'User').replace('_', ' ');
+                if (isAdmin) { roleClass += ' admin-role'; roleText = '👑 ' + roleText; }
                 else if (isInactive) { roleClass += ' inactive-role'; roleText = '🚫 Inactive'; }
                 else if (isPending) { roleClass += ' pending-role'; roleText = '⏳ Pending'; }
                 return `
@@ -2196,26 +2495,17 @@
                         </div>
                         <div class="admin-user-actions">
                             ${!isAdmin && !isCurrentUser && isPending ? `
-                                <button class="resend-btn" onclick="resendInvitation('${user.email}')" title="Resend">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
+                                <button class="resend-btn" onclick="resendInvitation('${user.email}')" title="Resend"><i class="fas fa-paper-plane"></i></button>
                             ` : ''}
                             ${!isAdmin && !isCurrentUser && !isPending ? `
-                                <button class="toggle-btn" onclick="toggleUserStatus('${user.email}')">
-                                    <i class="fas fa-${isInactive ? 'check' : 'ban'}"></i>
-                                </button>
-                                <button class="resend-btn" onclick="resetUserPassword('${user.email}')">
-                                    <i class="fas fa-key"></i>
-                                </button>
+                                <button class="toggle-btn" onclick="toggleUserStatus('${user.email}')"><i class="fas fa-${isInactive ? 'check' : 'ban'}"></i></button>
+                                <button class="resend-btn" onclick="resetUserPassword('${user.email}')"><i class="fas fa-key"></i></button>
                             ` : ''}
                             ${!isAdmin && !isCurrentUser ? `
-                                <button class="delete-btn" onclick="deleteUser('${user.email}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                <button class="delete-btn" onclick="deleteUser('${user.email}')"><i class="fas fa-trash"></i></button>
                             ` : ''}
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
         }
 
@@ -2224,7 +2514,7 @@
             const adminEl = getElement('adminUsers');
             const pendingEl = getElement('pendingUsers');
             if (totalEl) totalEl.textContent = users?.length || 0;
-            if (adminEl) adminEl.textContent = users?.filter(u => u.is_admin).length || 0;
+            if (adminEl) adminEl.textContent = users?.filter(u => userIsAdmin(u)).length || 0;
             if (pendingEl) pendingEl.textContent = users?.filter(u => !u.password_set || u.status === 'pending').length || 0;
         }
 
@@ -2234,7 +2524,7 @@
             const roleEl = getElement('addUserRole');
             const email = emailEl?.value.trim().toLowerCase();
             const name = nameEl?.value.trim();
-            const role = roleEl?.value || 'user';
+            const role = roleEl?.value || 'admin_agent';
             if (!email) return showToast('Please enter a valid email address', 'error');
 
             try {
@@ -2262,7 +2552,7 @@
             try {
                 const response = await apiFetch(`${API_BASE_URL}/admin/users/${encodeURIComponent(email)}`, { method: 'DELETE' });
                 const result = await response.json();
-                if (result.success) { showToast(`User removed`, 'success'); loadUsers(); }
+                if (result.success || response.ok) { showToast(`User removed`, 'success'); loadUsers(); }
                 else showToast(result.error || 'Failed', 'error');
             } catch (error) { showToast('Error', 'error'); }
         }
@@ -2346,12 +2636,13 @@
 
                 const response = await apiFetch(`${API_BASE_URL}/admin/audit-log?${params.toString()}`);
                 const result = await response.json();
-                if (!result.success) {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--danger);">Error: ${result.error}</td></tr>`;
+                const entries = result.data || result.logs || [];
+                if (!result.success && !Array.isArray(entries)) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--danger);">Error: ${result.error || 'Unknown'}</td></tr>`;
                     return;
                 }
-                renderAuditTable(result.data);
-                updateAuditStats(result.data);
+                renderAuditTable(entries);
+                updateAuditStats(entries);
             } catch (error) {
                 tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--danger);">Failed to load</td></tr>`;
             }
@@ -2367,23 +2658,22 @@
                 return;
             }
             tbody.innerHTML = entries.map(e => {
-                const timestamp = e.timestamp ? new Date(e.timestamp).toLocaleString('en-KE', {
-                    year: 'numeric', month: 'short', day: '2-digit',
-                    hour: '2-digit', minute: '2-digit'
-                }) : 'N/A';
-                const officer = `${e.generated_by_name || 'Unknown'}<br><small style="color:var(--gray-600);">${e.generated_by_email || ''}</small>`;
+                const timestamp = formatDateEAT(e.timestamp || e.createdAt);
+                const officer = `${e.generated_by_name || e.userName || 'Unknown'}<br><small style="color:var(--gray-600);">${e.generated_by_email || e.userEmail || ''}</small>`;
                 const customer = `${e.customer_name || 'N/A'}<br><small style="color:var(--gray-600);">No: ${e.customer_no || '-'}</small>`;
                 let loanAmount = e.loan_amount || '';
                 if (loanAmount && !isNaN(parseFloat(loanAmount))) {
-                    loanAmount = 'KES ' + parseFloat(loanAmount).toLocaleString();
+                    loanAmount = 'KES ' + parseFloat(loanAmount).toLocaleString('en-KE');
                 }
                 const loan = `${e.loan_product || 'N/A'}<br><small style="color:var(--gray-600);">${loanAmount}</small>`;
+                const level = e.verification_level || 'unverified';
                 const badges = [
                     e.has_team_leader_sig ? '<span class="badge sig">TL</span>' : '',
                     e.has_agent_sig ? '<span class="badge sig">Agent</span>' : '',
-                    e.gps_location && e.gps_location !== 'N/A' ? '<span class="badge gps">GPS</span>' : '',
-                    e.kyc_status === 'verified' ? '<span class="badge verified">KYC</span>' : '',
-                    '<span class="badge manual">Manual</span>'
+                    e.has_customer_sig ? '<span class="badge sig">Customer</span>' : '',
+                    e.has_selfie ? '<span class="badge sig">Selfie</span>' : '',
+                    e.otp_verified ? '<span class="badge verified">OTP</span>' : '',
+                    `<span class="verification-badge ${level}">${level}</span>`
                 ].join(' ');
                 return `
                     <tr>
@@ -2395,12 +2685,9 @@
                         <td><code style="font-size:0.75rem;background:var(--gray-100);padding:2px 6px;border-radius:3px;">${e.report_id || 'N/A'}</code></td>
                         <td>${badges}</td>
                         <td>
-                            <button class="delete-entry-btn" onclick="deleteAuditEntry('${e.id}')" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <button class="delete-entry-btn" onclick="deleteAuditEntry('${e.id || e._id}')" title="Delete"><i class="fas fa-trash"></i></button>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             }).join('');
         }
 
@@ -2410,7 +2697,7 @@
             const amountEl = getElement('auditTotalAmount');
             if (totalEl) totalEl.textContent = entries.length;
             if (usersEl) {
-                const uniqueUsers = new Set(entries.map(e => e.generated_by_email).filter(Boolean));
+                const uniqueUsers = new Set(entries.map(e => e.generated_by_email || e.userEmail).filter(Boolean));
                 usersEl.textContent = uniqueUsers.size;
             }
             if (amountEl) {
@@ -2427,7 +2714,7 @@
             try {
                 const response = await apiFetch(`${API_BASE_URL}/admin/audit-log/${entryId}`, { method: 'DELETE' });
                 const result = await response.json();
-                if (result.success) { showToast('Entry deleted', 'success'); loadAuditLog(); }
+                if (result.success || response.ok) { showToast('Entry deleted', 'success'); loadAuditLog(); }
                 else showToast(result.error || 'Failed', 'error');
             } catch (error) { showToast('Error', 'error'); }
         }
@@ -2483,72 +2770,14 @@
         }
 
         // ============================================================
-        // APP INITIALIZATION
-        // ============================================================
-        function initApp() {
-            console.log('🚀 Initializing app (manual entry mode)...');
-            initAutoDate();
-
-            state.gpsManager = new GPSLocationManager();
-            state.gpsManager.startTracking((position) => {
-                if (position && state.map) {
-                    state.map.setView([position.lat, position.lng], 16);
-                    setLocation(position.lat, position.lng);
-                }
-            });
-
-            state.teamLeaderSignaturePad = new SignaturePad('teamLeaderSignatureCanvas', 'teamLeaderSignaturePlaceholder', 'teamLeaderSignatureStatus');
-            state.agentSignaturePad = new SignaturePad('agentSignatureCanvas', 'agentSignaturePlaceholder', 'agentSignatureStatus');
-
-            ['clearTeamLeaderSignature', 'undoTeamLeaderSignature', 'downloadTeamLeaderSignature'].forEach((id, i) => {
-                const el = getElement(id);
-                if (el) el.addEventListener('click', () => {
-                    if (!state.teamLeaderSignaturePad) return;
-                    if (i === 0) state.teamLeaderSignaturePad.clear();
-                    else if (i === 1) state.teamLeaderSignaturePad.undo();
-                    else state.teamLeaderSignaturePad.download('team_leader_signature.png');
-                });
-            });
-
-            ['clearAgentSignature', 'undoAgentSignature', 'downloadAgentSignature'].forEach((id, i) => {
-                const el = getElement(id);
-                if (el) el.addEventListener('click', () => {
-                    if (!state.agentSignaturePad) return;
-                    if (i === 0) state.agentSignaturePad.clear();
-                    else if (i === 1) state.agentSignaturePad.undo();
-                    else state.agentSignaturePad.download('agent_signature.png');
-                });
-            });
-
-            ['teamLeaderConfirm', 'agentConfirm'].forEach(id => {
-                const cb = getElement(id);
-                const box = getElement(id + 'Box');
-                if (cb && box) {
-                    const update = () => box.classList.toggle('checked', cb.checked);
-                    cb.addEventListener('change', update);
-                    update();
-                }
-            });
-
-            initMap();
-            setupEventListeners();
-            updatePreview();
-            setupPasswordFormListeners();
-            setupAuditTabs();
-            setupAuditListeners();
-            initAutofill();
-
-            showToast('📍 GPS enabled · Manual entry mode', 'info');
-        }
-
-        // ============================================================
         // MAP
         // ============================================================
         function initMap() {
             if (typeof L === 'undefined' || state.map) return;
             state.map = L.map('map').setView([-1.2921, 36.8219], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap', maxZoom: 19
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
             }).addTo(state.map);
             state.map.on('click', (e) => {
                 setLocation(e.latlng.lat, e.latlng.lng);
@@ -2640,7 +2869,7 @@
 
             form.querySelectorAll('input, select, textarea').forEach(field => {
                 if (field.type === 'checkbox') {
-                    if (field.id === 'teamLeaderConfirm' || field.id === 'agentConfirm') {
+                    if (['teamLeaderConfirm', 'agentConfirm', 'customerConfirm'].includes(field.id)) {
                         data[field.id] = field.checked;
                     }
                 } else if (field.type !== 'file') {
@@ -2648,16 +2877,38 @@
                 }
             });
 
-            data.team_leader_signature_image = state.teamLeaderSignaturePad?.isSignatureSigned() ? state.teamLeaderSignaturePad.getSignatureData() : '';
-            data.agent_signature_image = state.agentSignaturePad?.isSignatureSigned() ? state.agentSignaturePad.getSignatureData() : '';
+            data.team_leader_signature_image =
+                state.teamLeaderSignaturePad?.isSignatureSigned() ? state.teamLeaderSignaturePad.getSignatureData() : '';
+            data.agent_signature_image =
+                state.agentSignaturePad?.isSignatureSigned() ? state.agentSignaturePad.getSignatureData() : '';
+            data.customer_signature_image =
+                state.customerSignaturePad?.isSignatureSigned() ? state.customerSignaturePad.getSignatureData() : '';
+            data.customer_signed_at = state.customerSignedAt;
+            data.customer_signed_gps = state.customerSignedGps;
+
+            data.selfie_image = state.selfieImage || '';
+            data.selfie_gps = state.selfieGps;
+            data.selfie_timestamp = state.selfieTimestamp;
+
+            data.otp_verification_token = state.otpVerificationToken || '';
+            data.otp_verified = !!state.otpVerified;
+            data.otp_verified_at = state.otpVerifiedAt;
+            data.otp_phone = state.otpPhone;
+
+            data.unverified_reason = (getElement('unverified_reason')?.value || '').trim();
+
             data.team_leader_signed = data.team_leader_signature_image ? 'yes' : 'no';
             data.agent_signed = data.agent_signature_image ? 'yes' : 'no';
+            data.customer_signed = data.customer_signature_image ? 'yes' : 'no';
             data.team_leader_confirmed = !!data.teamLeaderConfirm;
             data.agent_confirmed = !!data.agentConfirm;
+            data.customer_confirmed = !!data.customerConfirm;
             data.data_source = 'MANUAL_ENTRY';
+            data.officer_gps_at_signature = getCurrentGpsString();
 
             if (!data.report_id) {
-                data.report_id = 'RPT-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+                data.report_id = 'RPT-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' +
+                    String(Math.floor(Math.random() * 1000)).padStart(3, '0');
             }
 
             data.Name = data.customer_name || '';
@@ -2669,7 +2920,6 @@
             data.Address = data.customer_address || '';
             data.Status = data.customer_status || '';
             data.Sales_Team_Lead = data.customer_sales_lead || '';
-            data.State = data.customer_state || '';
 
             return data;
         }
@@ -2689,8 +2939,13 @@
                 return;
             }
 
-            if (!formData.team_leader_confirmed || !formData.agent_confirmed) {
+            if (!formData.team_leader_confirmed || !formData.agent_confirmed || !formData.customer_confirmed) {
                 if (!confirm('⚠️ Signature confirmation incomplete. Continue anyway?')) return;
+            }
+
+            if (!state.otpVerified && !formData.unverified_reason) {
+                showToast('Customer verification is required. Send an OTP to the customer OR provide an unverified reason.', 'error');
+                return;
             }
 
             state.isGenerating = true;
@@ -2712,7 +2967,12 @@
                     pdfBase64: result.pdf,
                     hasGPS: !!formData.gps_locator,
                     hasTeamLeaderSig: !!formData.team_leader_signature_image,
-                    hasAgentSig: !!formData.agent_signature_image
+                    hasAgentSig: !!formData.agent_signature_image,
+                    hasCustomerSig: !!formData.customer_signature_image,
+                    hasSelfie: !!formData.selfie_image,
+                    otpVerified: !!state.otpVerified,
+                    verificationLevel: result.verification_level || 'unverified',
+                    payloadHash: result.payload_hash || null
                 });
 
                 updatePreview();
@@ -2779,9 +3039,16 @@
                             ${r.hasGPS ? '<span class="gps-badge">GPS</span>' : ''}
                             ${r.hasTeamLeaderSig ? '<span class="signature-badge">TL</span>' : ''}
                             ${r.hasAgentSig ? '<span class="signature-badge">Agent</span>' : ''}
-                            <span class="signature-badge manual-badge">Manual</span>
+                            ${r.hasCustomerSig ? '<span class="signature-badge">Customer</span>' : ''}
+                            ${r.hasSelfie ? '<span class="signature-badge">Selfie</span>' : ''}
                         </div>
                         <div class="preview-meta">${r.data.report_id} • ${r.data.branch || ''} • ${r.data.loan_product || ''}</div>
+                        <div style="margin-top:6px;">
+                            <span class="verification-badge ${r.verificationLevel || 'unverified'}">
+                                ${(r.verificationLevel || 'unverified').toUpperCase()}
+                            </span>
+                            ${r.payloadHash ? `<small style="margin-left:8px;color:var(--gray-600);font-family:monospace;">${r.payloadHash.slice(0,16)}...</small>` : ''}
+                        </div>
                     </div>
                     <div class="preview-actions">
                         <button class="download-btn" onclick="downloadReport(${i})"><i class="fas fa-download"></i></button>
@@ -2797,10 +3064,7 @@
             if (r) downloadPDF(r.pdfBase64, r.filename);
         }
 
-        function removeReport(i) {
-            state.reports.splice(i, 1);
-            updatePreview();
-        }
+        function removeReport(i) { state.reports.splice(i, 1); updatePreview(); }
 
         function clearAllReports() {
             if (state.reports.length === 0) return showToast('No reports', 'info');
@@ -2824,10 +3088,36 @@
             form.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
             state.teamLeaderSignaturePad?.clear();
             state.agentSignaturePad?.clear();
-            ['teamLeaderConfirmBox', 'agentConfirmBox'].forEach(id => {
+            state.customerSignaturePad?.clear();
+            ['teamLeaderConfirmBox', 'agentConfirmBox', 'customerConfirmBox'].forEach(id => {
                 const box = getElement(id);
                 if (box) box.classList.remove('checked');
             });
+            state.customerSignedAt = null;
+            state.customerSignedGps = null;
+            state.otpVerified = false;
+            state.otpPhone = null;
+            state.otpVerificationToken = null;
+            state.otpVerifiedAt = null;
+            state.selfieImage = null;
+            state.selfieGps = null;
+            state.selfieTimestamp = null;
+            const otpStatus = getElement('otpStatusBadge');
+            if (otpStatus) { otpStatus.className = 'otp-status pending'; otpStatus.innerHTML = '<i class="fas fa-circle"></i> Not verified'; }
+            const otpMsg = getElement('otpMessage');
+            if (otpMsg) otpMsg.textContent = '';
+            const otpCodeRow = getElement('otpCodeRow');
+            if (otpCodeRow) otpCodeRow.style.display = 'none';
+            const otpCountdown = getElement('otpCountdown');
+            if (otpCountdown) { otpCountdown.style.display = 'none'; otpCountdown.textContent = ''; }
+            const selfiePreview = getElement('selfiePreview');
+            if (selfiePreview) { selfiePreview.src = ''; selfiePreview.style.display = 'none'; }
+            const selfieMeta = getElement('selfieMeta');
+            if (selfieMeta) selfieMeta.style.display = 'none';
+            const capBtn = getElement('selfieCaptureBtn');
+            if (capBtn) capBtn.style.display = 'inline-flex';
+            const retakeBtn = getElement('selfieRetakeBtn');
+            if (retakeBtn) retakeBtn.style.display = 'none';
             clearLocation();
             updateMeetingDatetime();
             showToast('Form reset', 'success');
@@ -2872,6 +3162,87 @@
 
             const resetBtn = getElement('reportForm')?.querySelector('button[type="reset"]');
             if (resetBtn) resetBtn.addEventListener('click', (e) => { e.preventDefault(); resetForm(); });
+        }
+
+        // ============================================================
+        // APP INITIALIZATION
+        // ============================================================
+        function initApp() {
+            initAutoDate();
+
+            state.gpsManager = new GPSLocationManager();
+            state.gpsManager.startTracking((position) => {
+                if (position && state.map) {
+                    state.map.setView([position.lat, position.lng], 16);
+                    setLocation(position.lat, position.lng);
+                }
+            });
+
+            state.teamLeaderSignaturePad = new SignaturePad('teamLeaderSignatureCanvas', 'teamLeaderSignaturePlaceholder', 'teamLeaderSignatureStatus');
+            state.agentSignaturePad = new SignaturePad('agentSignatureCanvas', 'agentSignaturePlaceholder', 'agentSignatureStatus');
+            state.customerSignaturePad = new SignaturePad('customerSignatureCanvas', 'customerSignaturePlaceholder', 'customerSignatureStatus');
+
+            if (state.customerSignaturePad && state.customerSignaturePad.canvas) {
+                const canvas = state.customerSignaturePad.canvas;
+                const captureSign = () => {
+                    if (state.customerSignaturePad.isSignatureSigned() && !state.customerSignedAt) {
+                        state.customerSignedAt = new Date().toISOString();
+                        state.customerSignedGps = getCurrentGpsString();
+                    }
+                };
+                canvas.addEventListener('mouseup', captureSign);
+                canvas.addEventListener('touchend', captureSign);
+            }
+
+            ['clearTeamLeaderSignature', 'undoTeamLeaderSignature', 'downloadTeamLeaderSignature'].forEach((id, i) => {
+                getElement(id)?.addEventListener('click', () => {
+                    if (!state.teamLeaderSignaturePad) return;
+                    if (i === 0) state.teamLeaderSignaturePad.clear();
+                    else if (i === 1) state.teamLeaderSignaturePad.undo();
+                    else state.teamLeaderSignaturePad.download('team_leader_signature.png');
+                });
+            });
+
+            ['clearAgentSignature', 'undoAgentSignature', 'downloadAgentSignature'].forEach((id, i) => {
+                getElement(id)?.addEventListener('click', () => {
+                    if (!state.agentSignaturePad) return;
+                    if (i === 0) state.agentSignaturePad.clear();
+                    else if (i === 1) state.agentSignaturePad.undo();
+                    else state.agentSignaturePad.download('agent_signature.png');
+                });
+            });
+
+            ['clearCustomerSignature', 'undoCustomerSignature', 'downloadCustomerSignature'].forEach((id, i) => {
+                getElement(id)?.addEventListener('click', () => {
+                    if (!state.customerSignaturePad) return;
+                    if (i === 0) {
+                        state.customerSignaturePad.clear();
+                        state.customerSignedAt = null;
+                        state.customerSignedGps = null;
+                    }
+                    else if (i === 1) state.customerSignaturePad.undo();
+                    else state.customerSignaturePad.download('customer_signature.png');
+                });
+            });
+
+            ['teamLeaderConfirm', 'agentConfirm', 'customerConfirm'].forEach(id => {
+                const cb = getElement(id);
+                const box = getElement(id + 'Box');
+                if (cb && box) {
+                    const update = () => box.classList.toggle('checked', cb.checked);
+                    cb.addEventListener('change', update);
+                    update();
+                }
+            });
+
+            initMap();
+            setupEventListeners();
+            updatePreview();
+            setupPasswordFormListeners();
+            setupAuditTabs();
+            setupAuditListeners();
+            setupVerificationListeners();
+            initAutofill();
         }
 
         // ============================================================
