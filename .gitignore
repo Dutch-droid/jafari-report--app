@@ -55,3 +55,5 @@ htmlcov/
 *.bak
 *.backup
 audit_log.json
+# Local backups - never commit
+backups/
