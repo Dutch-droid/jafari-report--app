@@ -1391,7 +1391,16 @@
             return response;
         }
 
-        function getURLParameter(name) { return new URLSearchParams(window.location.search).get(name); }
+        function getURLParameter(name) {
+    return new URLSearchParams(window.location.search).get(name);
+}
+
+// Supports BOTH /accept-invite/<token>  AND  /?invite=<token>
+function getInviteToken() {
+    const m = window.location.pathname.match(/\/accept-invite\/([^/?#]+)/);
+    if (m) return decodeURIComponent(m[1]);
+    return new URLSearchParams(window.location.search).get('invite');
+}
         function clearURLParameters() { window.history.replaceState({}, document.title, window.location.pathname); }
 
         // ============================================================
@@ -1404,11 +1413,12 @@
                 const result = await response.json();
                 hideLoading();
 
-                if (!result.success && !result.email) {
-                    showToast(result.error || 'Invalid invitation link', 'error');
-                    showLoginPage();
-                    return false;
-                }
+                const ok = (result.success === true) || (!!result.email && !result.error);
+if (!ok) {
+    showToast(result.error || result.message || 'Invalid invitation link', 'error');
+    showLoginPage();
+    return false;
+}
 
                 state.invitationToken = token;
                 const setupEmail = getElement('setupEmail');
@@ -1435,10 +1445,9 @@
         function setupPasswordFormListeners() {
             const passwordInput = getElement('setupPassword');
             const confirmInput = getElement('setupConfirmPassword');
-
-            function updateRequirements() {
-                const password = passwordInput?.value || '';
-                const confirm = confirmInput?.value || '';
+function updateRequirements() {
+    const password = (passwordInput?.value || '').trim();
+    const confirm = (confirmInput?.value || '').trim();
                 const reqLength = getElement('reqLength');
                 const reqMatch = getElement('reqMatch');
 
@@ -1494,7 +1503,7 @@
                 });
                 const result = await response.json();
 
-                if (result.success) {
+                if (result.success === true || (result.token && result.user)) {
                     if (successDiv) { successDiv.classList.add('show'); if (successMsg) successMsg.textContent = 'Password set successfully! Redirecting...'; }
                     setTimeout(() => {
                         state.invitationToken = null;
@@ -2533,7 +2542,7 @@
                     body: JSON.stringify({ email, name, role })
                 });
                 const result = await response.json();
-                if (result.success) {
+                if (result.success === true || (result.token && result.user)) {
                     showToast(result.message || `Invitation sent`, 'success');
                     if (emailEl) emailEl.value = '';
                     if (nameEl) nameEl.value = '';
@@ -2564,7 +2573,7 @@
                     body: JSON.stringify({ email })
                 });
                 const result = await response.json();
-                if (result.success) {
+                if (result.success === true || (result.token && result.user)) {
                     showToast(`Invitation resent`, 'success');
                     if (result.invitation_link) {
                         const box = getElement('invitationLinkBox');
@@ -2580,7 +2589,7 @@
             try {
                 const response = await apiFetch(`${API_BASE_URL}/admin/users/${encodeURIComponent(email)}/reset-password`, { method: 'POST' });
                 const result = await response.json();
-                if (result.success) {
+                if (result.success === true || (result.token && result.user)) {
                     showToast(`Reset link sent`, 'success');
                     if (result.invitation_link) {
                         const box = getElement('invitationLinkBox');
@@ -3248,16 +3257,16 @@
         // ============================================================
         // START
         // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const inviteToken = getURLParameter('invite');
-            if (inviteToken) {
-                validateAndShowPasswordSetup(inviteToken);
-            } else {
-                const hasSession = checkExistingSession();
-                if (!hasSession) showLoginPage();
-            }
-            setupEventListeners();
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    const inviteToken = getInviteToken();
+    if (inviteToken) {
+        validateAndShowPasswordSetup(inviteToken);
+    } else {
+        const hasSession = checkExistingSession();
+        if (!hasSession) showLoginPage();
+    }
+    setupEventListeners();
+});
     </script>
 </body>
 </html>

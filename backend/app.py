@@ -1,10 +1,6 @@
 """
 Loan Registry Tracking API + Customer Meeting Report Backend
-Fully self-contained: auto-seeds organization + super admin on first boot.
-
-Super admin credentials (change after first login!):
-  email:    pmwaura@jafaricredit.co.ke
-  password: admin123
+Auto-bootstraps a super admin on startup.
 """
 
 import os
@@ -49,16 +45,15 @@ MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017/loan-registry"
 JWT_SECRET = os.getenv("JWT_SECRET_KEY", "change-me-in-prod")
 PORT = int(os.getenv("PORT", 5000))
 
-# Clean FRONTEND_URL: strip trailing slash and any /index.html
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000").rstrip("/")
 if FRONTEND_URL.endswith("/index.html"):
     FRONTEND_URL = FRONTEND_URL[: -len("/index.html")]
 
-# === SUPER ADMIN BOOTSTRAP CREDENTIALS ===
 SUPER_ADMIN_EMAIL = os.getenv("SUPER_ADMIN_EMAIL", "pmwaura@jafaricredit.co.ke")
 SUPER_ADMIN_PASSWORD = os.getenv("SUPER_ADMIN_PASSWORD", "admin123")
 SUPER_ADMIN_NAME = os.getenv("SUPER_ADMIN_NAME", "Peter Mwaura")
 SUPER_ADMIN_ORG = os.getenv("SUPER_ADMIN_ORG", "Jafari Credit")
+SUPER_ADMIN_ORG_REG = os.getenv("SUPER_ADMIN_ORG_REG", "REG-JAFARI-001")
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = JWT_SECRET
@@ -116,8 +111,8 @@ class Organization(Document):
             "contactEmail": self.contact_email,
             "contactPhone": self.contact_phone,
             "isActive": self.is_active,
-            "createdAt": self.created_at,
-            "updatedAt": self.updated_at,
+            "createdAt": self.created_at.isoformat() if self.created_at else None,
+            "updatedAt": self.updated_at.isoformat() if self.updated_at else None,
         }
 
 
@@ -168,13 +163,13 @@ class User(Document):
     meta = {"collection": "users"}
 
     def set_password(self, raw):
-        self.password_hash = bcrypt.hashpw(raw.encode(), bcrypt.gensalt()).decode()
+        self.password_hash = bcrypt.hashpw(raw.strip().encode(), bcrypt.gensalt()).decode()
 
     def check_password(self, raw):
         if not self.password_hash:
             return False
         try:
-            return bcrypt.checkpw(raw.encode(), self.password_hash.encode())
+            return bcrypt.checkpw(raw.strip().encode(), self.password_hash.encode())
         except Exception:
             return False
 
@@ -447,6 +442,13 @@ def _new_invitation_token():
     raise RuntimeError("Could not generate unique token")
 
 
+def _scope_user_query(actor):
+    """Return the User queryset appropriate for the actor's role."""
+    if actor.role == "super_admin":
+        return User.objects
+    return User.objects(organization=actor.organization)
+
+
 # ------------------------------------------------------------------
 # HEALTH
 # ------------------------------------------------------------------
@@ -459,11 +461,12 @@ def health():
         "timestamp": utcnow().isoformat(),
         "frontend_url": FRONTEND_URL,
         "users": User.objects.count(),
+        "orgs": Organization.objects.count(),
     })
 
 
 # ------------------------------------------------------------------
-# AUTH ROUTES
+# AUTH
 # ------------------------------------------------------------------
 @app.route("/api/auth/register", methods=["POST", "OPTIONS"])
 def register():
@@ -495,7 +498,7 @@ def login():
         return "", 204
     data = request.get_json() or {}
     email = (data.get("email") or "").strip().lower()
-    password = data.get("password") or ""
+    password = (data.get("password") or "").strip()
     if not email or not password:
         return jsonify({"success": False, "message": "Email and password required"}), 400
     user = User.objects(email=email).first()
@@ -519,7 +522,7 @@ def me():
 
 
 # ------------------------------------------------------------------
-# INVITATION VALIDATION + SETUP PASSWORD
+# INVITATION FLOW
 # ------------------------------------------------------------------
 @app.route("/api/auth/validate-invitation/<token>", methods=["GET", "OPTIONS"])
 def auth_validate_invitation(token):
@@ -544,8 +547,8 @@ def auth_setup_password():
         return "", 204
     data = request.get_json() or {}
     token = (data.get("token") or "").strip()
-    password = data.get("password") or ""
-    confirm = data.get("confirm_password") or ""
+    password = (data.get("password") or "").strip()
+    confirm = (data.get("confirm_password") or "").strip()
     if not token:
         return jsonify({"success": False, "error": "Missing invitation token"}), 400
     if len(password) < 6:
@@ -577,9 +580,6 @@ def auth_setup_password():
     return jsonify({"success": True, "token": jwt_token, "user": user.to_dict()}), 201
 
 
-# ------------------------------------------------------------------
-# INVITATIONS
-# ------------------------------------------------------------------
 @app.route("/api/invitations", methods=["GET", "OPTIONS"])
 @role_required("super_admin", "admin_agent")
 def list_invitations():
@@ -672,8 +672,22 @@ def admin_list_users():
     if request.method == "OPTIONS":
         return "", 204
     user = current_user()
-    users = User.objects(organization=user.organization).order_by("name")
-    data = [u.to_dict() for u in users]
+    if not user:
+        return jsonify({"success": False, "error": "Not authenticated"}), 401
+
+    if user.role == "super_admin":
+        users = list(User.objects.order_by("name"))
+    else:
+        users = list(User.objects(organization=user.organization).order_by("name"))
+
+    data = []
+    for u in users:
+        try:
+            data.append(u.to_dict())
+        except Exception as e:
+            print(f"[admin_list_users] to_dict failed for {u.email}: {e}")
+
+    print(f"[admin_list_users] {user.email} (role={user.role}) -> {len(data)} users")
     return jsonify({"success": True, "data": data, "users": data})
 
 
@@ -718,9 +732,14 @@ def admin_delete_user(email):
         return "", 204
     actor = current_user()
     try:
-        target = User.objects.get(email=email, organization=actor.organization)
+        if actor.role == "super_admin":
+            target = User.objects.get(email=email)
+        else:
+            target = User.objects.get(email=email, organization=actor.organization)
     except User.DoesNotExist:
         return jsonify({"success": False, "error": "User not found"}), 404
+    if target.id == actor.id:
+        return jsonify({"success": False, "error": "Cannot delete yourself"}), 400
     target.delete()
     log_action(actor, "user.delete", "user", None, f"email={email}")
     return jsonify({"success": True, "message": "User removed"})
@@ -733,7 +752,10 @@ def admin_toggle_user(email):
         return "", 204
     actor = current_user()
     try:
-        target = User.objects.get(email=email, organization=actor.organization)
+        if actor.role == "super_admin":
+            target = User.objects.get(email=email)
+        else:
+            target = User.objects.get(email=email, organization=actor.organization)
     except User.DoesNotExist:
         return jsonify({"success": False, "error": "User not found"}), 404
     target.is_active = not target.is_active
@@ -763,446 +785,6 @@ def admin_reset_password(email):
 
 
 # ------------------------------------------------------------------
-# BRANCHES
-# ------------------------------------------------------------------
-@app.route("/api/branches", methods=["GET", "OPTIONS"])
-@auth_required
-def list_branches():
-    if request.method == "OPTIONS":
-        return "", 204
-    user = current_user()
-    branches = Branch.objects(organization=user.organization, is_active=True).order_by("name")
-    return jsonify({"success": True, "branches": [b.to_dict() for b in branches]})
-
-
-@app.route("/api/branches/<branch_id>", methods=["GET", "OPTIONS"])
-@auth_required
-def get_branch(branch_id):
-    if request.method == "OPTIONS":
-        return "", 204
-    user = current_user()
-    try:
-        branch = Branch.objects.get(id=branch_id, organization=user.organization)
-    except Exception:
-        return jsonify({"success": False, "message": "Branch not found"}), 404
-    loans = Loan.objects(branch=branch)
-    summary = {}
-    for loan in loans:
-        s = summary.setdefault(loan.status, {"_id": loan.status, "count": 0, "totalAmount": 0, "totalOutstanding": 0})
-        s["count"] += 1
-        s["totalAmount"] += loan.principal_amount
-        s["totalOutstanding"] += loan.outstanding_balance
-    return jsonify({"success": True, "branch": branch.to_dict(), "summary": list(summary.values())})
-
-
-@app.route("/api/branches", methods=["POST", "OPTIONS"])
-@role_required("super_admin", "admin_agent")
-def create_branch():
-    if request.method == "OPTIONS":
-        return "", 204
-    data = request.get_json() or {}
-    user = current_user()
-    branch = Branch(
-        name=data.get("name"), code=data.get("code"),
-        organization=user.organization,
-        address=data.get("address"),
-        manager_name=data.get("managerName"),
-        contact_email=data.get("contactEmail"),
-        contact_phone=data.get("contactPhone"),
-    )
-    branch.save()
-    log_action(user, "branch.create", "branch", branch.id, f"name={branch.name}")
-    return jsonify({"success": True, "branch": branch.to_dict()}), 201
-
-
-@app.route("/api/branches/<branch_id>", methods=["PUT", "OPTIONS"])
-@role_required("super_admin", "admin_agent")
-def update_branch(branch_id):
-    if request.method == "OPTIONS":
-        return "", 204
-    data = request.get_json() or {}
-    user = current_user()
-    try:
-        branch = Branch.objects.get(id=branch_id, organization=user.organization)
-    except Exception:
-        return jsonify({"success": False, "message": "Branch not found"}), 404
-    for field, camel in [
-        ("name", "name"), ("code", "code"),
-        ("manager_name", "managerName"), ("address", "address"),
-        ("contact_email", "contactEmail"), ("contact_phone", "contactPhone"),
-    ]:
-        if camel in data:
-            setattr(branch, field, data[camel])
-    branch.save()
-    log_action(user, "branch.update", "branch", branch.id)
-    return jsonify({"success": True, "branch": branch.to_dict()})
-
-
-# ------------------------------------------------------------------
-# LOANS
-# ------------------------------------------------------------------
-def build_loan_query(user):
-    qs = Loan.objects(organization=user.organization)
-    branch_id = request.args.get("branchId")
-    status = request.args.get("status")
-    loan_type = request.args.get("loanType")
-    search = request.args.get("search")
-    start_date = request.args.get("startDate")
-    end_date = request.args.get("endDate")
-    min_amount = request.args.get("minAmount")
-    max_amount = request.args.get("maxAmount")
-    if branch_id:
-        try:
-            qs = qs.filter(branch=Branch.objects.get(id=branch_id))
-        except Exception:
-            pass
-    if status:
-        qs = qs.filter(status=status)
-    if loan_type:
-        qs = qs.filter(loan_type=loan_type)
-    if start_date:
-        qs = qs.filter(created_at__gte=parse_date(start_date))
-    if end_date:
-        qs = qs.filter(created_at__lte=parse_date(end_date))
-    if min_amount:
-        qs = qs.filter(principal_amount__gte=float(min_amount))
-    if max_amount:
-        qs = qs.filter(principal_amount__lte=float(max_amount))
-    if search:
-        qs = qs.filter(
-            Q(loan_number__icontains=search)
-            | Q(borrower__full_name__icontains=search)
-            | Q(borrower__id_number__icontains=search)
-        )
-    return qs
-
-
-@app.route("/api/loans", methods=["GET", "OPTIONS"])
-@auth_required
-def list_loans():
-    if request.method == "OPTIONS":
-        return "", 204
-    user = current_user()
-    page = int(request.args.get("page", 1))
-    limit = int(request.args.get("limit", 20))
-    sort_by = request.args.get("sortBy", "created_at")
-    sort_order = request.args.get("sortOrder", "desc")
-    qs = build_loan_query(user)
-    sort_field = "-" + sort_by if sort_order == "desc" else sort_by
-    qs = qs.order_by(sort_field)
-    total = qs.count()
-    loans = qs.skip((page - 1) * limit).limit(limit)
-    return jsonify({
-        "success": True,
-        "loans": [l.to_dict() for l in loans],
-        "pagination": {"page": page, "limit": limit, "total": total,
-                       "pages": (total + limit - 1) // limit},
-    })
-
-
-@app.route("/api/loans/<loan_id>", methods=["GET", "OPTIONS"])
-@auth_required
-def get_loan(loan_id):
-    if request.method == "OPTIONS":
-        return "", 204
-    user = current_user()
-    try:
-        loan = Loan.objects.get(id=loan_id, organization=user.organization)
-    except Exception:
-        return jsonify({"success": False, "message": "Loan not found"}), 404
-    return jsonify({"success": True, "loan": loan.to_dict()})
-
-
-@app.route("/api/loans", methods=["POST", "OPTIONS"])
-@role_required("super_admin", "admin_agent", "branch_manager")
-def create_loan():
-    if request.method == "OPTIONS":
-        return "", 204
-    data = request.get_json() or {}
-    user = current_user()
-    try:
-        branch = Branch.objects.get(id=data["branchId"], organization=user.organization)
-    except Exception:
-        return jsonify({"success": False, "message": "Invalid branch"}), 400
-    b = data.get("borrower", {})
-    loan = Loan(
-        loan_number=data["loanNumber"],
-        organization=user.organization, branch=branch,
-        borrower=Borrower(
-            full_name=b.get("fullName"), id_number=b.get("idNumber"),
-            phone=b.get("phone"), email=b.get("email"),
-            address=b.get("address"), occupation=b.get("occupation"),
-        ),
-        loan_type=data["loanType"],
-        principal_amount=float(data["principalAmount"]),
-        interest_rate=float(data["interestRate"]),
-        term_months=int(data["termMonths"]),
-        currency=data.get("currency", "USD"),
-        status=data.get("status", "pending"),
-        created_by=user,
-    )
-    if data.get("nextPaymentDate"):
-        loan.next_payment_date = parse_date(data["nextPaymentDate"])
-    loan.save()
-    log_action(user, "loan.create", "loan", loan.id, f"loanNumber={loan.loan_number}")
-    return jsonify({"success": True, "loan": loan.to_dict()}), 201
-
-
-@app.route("/api/loans/<loan_id>", methods=["PUT", "OPTIONS"])
-@role_required("super_admin", "admin_agent", "branch_manager")
-def update_loan(loan_id):
-    if request.method == "OPTIONS":
-        return "", 204
-    data = request.get_json() or {}
-    user = current_user()
-    try:
-        loan = Loan.objects.get(id=loan_id, organization=user.organization)
-    except Exception:
-        return jsonify({"success": False, "message": "Loan not found"}), 404
-    for field, camel in [
-        ("loan_type", "loanType"), ("principal_amount", "principalAmount"),
-        ("interest_rate", "interestRate"), ("term_months", "termMonths"),
-        ("currency", "currency"), ("status", "status"), ("notes", "notes"),
-    ]:
-        if camel in data:
-            setattr(loan, field, data[camel])
-    loan.save()
-    log_action(user, "loan.update", "loan", loan.id)
-    return jsonify({"success": True, "loan": loan.to_dict()})
-
-
-@app.route("/api/loans/<loan_id>/payments", methods=["POST", "OPTIONS"])
-@role_required("super_admin", "admin_agent", "branch_manager")
-def record_payment(loan_id):
-    if request.method == "OPTIONS":
-        return "", 204
-    data = request.get_json() or {}
-    amount = data.get("amount")
-    if not amount or float(amount) <= 0:
-        return jsonify({"success": False, "message": "Invalid amount"}), 400
-    user = current_user()
-    try:
-        loan = Loan.objects.get(id=loan_id, organization=user.organization)
-    except Exception:
-        return jsonify({"success": False, "message": "Loan not found"}), 404
-    loan.amount_paid += float(amount)
-    loan.outstanding_balance = max(0, loan.total_repayable - loan.amount_paid)
-    if loan.outstanding_balance <= 0:
-        loan.status = "completed"
-    loan.save()
-    log_action(user, "loan.payment", "loan", loan.id, f"amount={amount}")
-    return jsonify({"success": True, "loan": loan.to_dict()})
-
-
-@app.route("/api/loans/<loan_id>/status", methods=["PATCH", "OPTIONS"])
-@role_required("super_admin", "admin_agent")
-def change_status(loan_id):
-    if request.method == "OPTIONS":
-        return "", 204
-    data = request.get_json() or {}
-    status = data.get("status")
-    user = current_user()
-    try:
-        loan = Loan.objects.get(id=loan_id, organization=user.organization)
-    except Exception:
-        return jsonify({"success": False, "message": "Loan not found"}), 404
-    loan.status = status
-    loan.approved_by = user
-    loan.save()
-    log_action(user, "loan.status_change", "loan", loan.id, f"new={status}")
-    return jsonify({"success": True, "loan": loan.to_dict()})
-
-
-@app.route("/api/loans/<loan_id>", methods=["DELETE", "OPTIONS"])
-@role_required("super_admin")
-def delete_loan(loan_id):
-    if request.method == "OPTIONS":
-        return "", 204
-    user = current_user()
-    try:
-        loan = Loan.objects.get(id=loan_id, organization=user.organization)
-    except Exception:
-        return jsonify({"success": False, "message": "Loan not found"}), 404
-    ln = loan.loan_number
-    loan.delete()
-    log_action(user, "loan.delete", "loan", loan_id, f"loanNumber={ln}")
-    return jsonify({"success": True, "message": "Loan deleted"})
-
-
-# ------------------------------------------------------------------
-# CSV EXPORT
-# ------------------------------------------------------------------
-@app.route("/api/loans/export/csv", methods=["GET", "OPTIONS"])
-@auth_required
-def export_loans_csv():
-    if request.method == "OPTIONS":
-        return "", 204
-    user = current_user()
-    qs = build_loan_query(user).order_by("-created_at")
-    buf = io.StringIO()
-    writer = csv.writer(buf)
-    writer.writerow([
-        "Loan Number", "Borrower Name", "Borrower ID", "Phone", "Email",
-        "Branch", "Branch Code", "Loan Type", "Status", "Currency",
-        "Principal", "Interest Rate (%)", "Term (months)",
-        "Total Repayable", "Amount Paid", "Outstanding",
-        "Next Payment Date", "Created At",
-    ])
-    for loan in qs:
-        writer.writerow([
-            loan.loan_number,
-            loan.borrower.full_name if loan.borrower else "",
-            loan.borrower.id_number if loan.borrower else "",
-            loan.borrower.phone if loan.borrower else "",
-            loan.borrower.email if loan.borrower else "",
-            loan.branch.name if loan.branch else "",
-            loan.branch.code if loan.branch else "",
-            loan.loan_type, loan.status, loan.currency,
-            loan.principal_amount, loan.interest_rate, loan.term_months,
-            loan.total_repayable, loan.amount_paid, loan.outstanding_balance,
-            loan.next_payment_date.strftime("%Y-%m-%d") if loan.next_payment_date else "",
-            loan.created_at.strftime("%Y-%m-%d %H:%M") if loan.created_at else "",
-        ])
-    log_action(user, "loan.export_csv", "loan", None, f"count={qs.count()}")
-    filename = f"loans-{datetime.now().strftime('%Y%m%d-%H%M%S')}.csv"
-    return Response(
-        buf.getvalue(),
-        mimetype="text/csv",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
-    )
-
-
-# ------------------------------------------------------------------
-# PDF STATEMENT
-# ------------------------------------------------------------------
-@app.route("/api/loans/<loan_id>/statement.pdf", methods=["GET", "OPTIONS"])
-@auth_required
-def loan_statement_pdf(loan_id):
-    if request.method == "OPTIONS":
-        return "", 204
-    user = current_user()
-    try:
-        loan = Loan.objects.get(id=loan_id, organization=user.organization)
-    except Exception:
-        return jsonify({"success": False, "message": "Loan not found"}), 404
-    buf = io.BytesIO()
-    doc = SimpleDocTemplate(buf, pagesize=LETTER, leftMargin=40, rightMargin=40, topMargin=40, bottomMargin=40)
-    styles = getSampleStyleSheet()
-    h1 = ParagraphStyle("H1", parent=styles["Heading1"], fontSize=20, textColor=colors.HexColor("#1e293b"))
-    h2 = ParagraphStyle("H2", parent=styles["Heading2"], fontSize=12, textColor=colors.HexColor("#334155"))
-    body = styles["BodyText"]
-    elements = []
-    elements.append(Paragraph("Loan Statement", h1))
-    elements.append(Paragraph(f"{user.organization.name}", body))
-    elements.append(Spacer(1, 12))
-    elements.append(Paragraph(f"Loan Number: <b>{loan.loan_number}</b>", body))
-    elements.append(Paragraph(f"Branch: <b>{loan.branch.name if loan.branch else '—'}</b>", body))
-    elements.append(Paragraph(f"Issued: {datetime.now().strftime('%Y-%m-%d %H:%M')}", body))
-    elements.append(Spacer(1, 16))
-    b = loan.borrower
-    elements.append(Paragraph("Borrower", h2))
-    bt = Table([
-        ["Full Name", b.full_name if b else ""],
-        ["ID Number", b.id_number if b else ""],
-        ["Phone", b.phone if b else ""],
-        ["Email", b.email if b else ""],
-        ["Address", b.address if b else ""],
-        ["Occupation", b.occupation if b else ""],
-    ], colWidths=[120, 380])
-    bt.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#f1f5f9")),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
-        ("FONTSIZE", (0, 0), (-1, -1), 10),
-    ]))
-    elements.append(bt)
-    elements.append(Spacer(1, 16))
-    elements.append(Paragraph("Loan Details", h2))
-    lt = Table([
-        ["Loan Type", loan.loan_type.title()],
-        ["Status", loan.status.replace("_", " ").title()],
-        ["Currency", loan.currency],
-        ["Principal Amount", f"{loan.currency} {loan.principal_amount:,.2f}"],
-        ["Interest Rate", f"{loan.interest_rate}%"],
-        ["Term", f"{loan.term_months} months"],
-        ["Total Repayable", f"{loan.currency} {loan.total_repayable:,.2f}"],
-        ["Amount Paid", f"{loan.currency} {loan.amount_paid:,.2f}"],
-        ["Outstanding Balance", f"{loan.currency} {loan.outstanding_balance:,.2f}"],
-    ], colWidths=[180, 320])
-    lt.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (0, -1), colors.HexColor("#f1f5f9")),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
-        ("FONTSIZE", (0, 0), (-1, -1), 10),
-    ]))
-    elements.append(lt)
-    doc.build(elements)
-    buf.seek(0)
-    log_action(user, "loan.statement_pdf", "loan", loan.id)
-    return send_file(buf, mimetype="application/pdf", as_attachment=True,
-                     download_name=f"statement-{loan.loan_number}.pdf")
-
-
-# ------------------------------------------------------------------
-# CSV BULK IMPORT
-# ------------------------------------------------------------------
-@app.route("/api/loans/import/csv", methods=["POST", "OPTIONS"])
-@role_required("super_admin", "admin_agent")
-def import_loans_csv():
-    if request.method == "OPTIONS":
-        return "", 204
-    if "file" not in request.files:
-        return jsonify({"success": False, "message": "No file uploaded"}), 400
-    file = request.files["file"]
-    if not file.filename.lower().endswith(".csv"):
-        return jsonify({"success": False, "message": "File must be a .csv"}), 400
-    user = current_user()
-    branches = {b.code.lower(): b for b in Branch.objects(organization=user.organization)}
-    stream = io.StringIO(file.stream.read().decode("utf-8-sig"))
-    reader = csv.DictReader(stream)
-    inserted, skipped, errors = 0, 0, []
-    for i, row in enumerate(reader, start=2):
-        try:
-            loan_number = (row.get("Loan Number") or "").strip()
-            if not loan_number:
-                skipped += 1
-                continue
-            if Loan.objects(loan_number=loan_number).first():
-                skipped += 1
-                continue
-            branch_code = (row.get("Branch Code") or "").strip().lower()
-            branch = branches.get(branch_code)
-            if not branch:
-                errors.append(f"row {i}: branch code '{branch_code}' not found")
-                continue
-            loan = Loan(
-                loan_number=loan_number,
-                organization=user.organization, branch=branch,
-                borrower=Borrower(
-                    full_name=row.get("Borrower Name") or "Unknown",
-                    id_number=row.get("Borrower ID") or "N/A",
-                    phone=row.get("Phone") or "",
-                    email=row.get("Email") or "",
-                    address=row.get("Address") or "",
-                    occupation=row.get("Occupation") or "",
-                ),
-                loan_type=(row.get("Loan Type") or "personal").lower(),
-                principal_amount=float(row.get("Principal") or 0),
-                interest_rate=float(row.get("Interest Rate (%)") or 0),
-                term_months=int(row.get("Term (months)") or 12),
-                amount_paid=float(row.get("Amount Paid") or 0),
-                currency=(row.get("Currency") or "USD").upper(),
-                status=(row.get("Status") or "pending").lower(),
-                created_by=user,
-            )
-            loan.save()
-            inserted += 1
-        except Exception as e:
-            errors.append(f"row {i}: {e}")
-    log_action(user, "loan.import_csv", "loan", None,
-               f"inserted={inserted}, skipped={skipped}, errors={len(errors)}")
-    return jsonify({"success": True, "inserted": inserted, "skipped": skipped, "errors": errors[:20]})
-
-
-# ------------------------------------------------------------------
 # AUDIT LOG
 # ------------------------------------------------------------------
 @app.route("/api/audit", methods=["GET", "OPTIONS"])
@@ -1222,7 +804,11 @@ def admin_audit_log():
     if request.method == "OPTIONS":
         return "", 204
     user = current_user()
-    qs = AuditLog.objects(organization=user.organization)
+    if user.role == "super_admin":
+        qs = AuditLog.objects
+    else:
+        qs = AuditLog.objects(organization=user.organization)
+
     user_email = request.args.get("user_email")
     if user_email:
         u = User.objects(email=user_email).first()
@@ -1263,9 +849,11 @@ def admin_delete_audit(log_id):
         return "", 204
     user = current_user()
     try:
-        log = AuditLog.objects.get(id=log_id, organization=user.organization)
+        log = AuditLog.objects.get(id=log_id)
     except AuditLog.DoesNotExist:
         return jsonify({"success": False, "error": "Not found"}), 404
+    if user.role != "super_admin" and log.organization and log.organization.id != user.organization.id:
+        return jsonify({"success": False, "error": "Forbidden"}), 403
     log.delete()
     return jsonify({"success": True})
 
@@ -1276,7 +864,10 @@ def admin_export_audit():
     if request.method == "OPTIONS":
         return "", 204
     user = current_user()
-    logs = AuditLog.objects(organization=user.organization).order_by("-created_at")
+    if user.role == "super_admin":
+        logs = AuditLog.objects.order_by("-created_at")
+    else:
+        logs = AuditLog.objects(organization=user.organization).order_by("-created_at")
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["Timestamp", "User", "Email", "Action", "Entity", "Entity ID", "Details"])
@@ -1466,7 +1057,23 @@ def generate_batch():
 
 
 # ------------------------------------------------------------------
-# DASHBOARD
+# BRANCHES
+# ------------------------------------------------------------------
+@app.route("/api/branches", methods=["GET", "OPTIONS"])
+@auth_required
+def list_branches():
+    if request.method == "OPTIONS":
+        return "", 204
+    user = current_user()
+    if user.role == "super_admin":
+        branches = Branch.objects(is_active=True).order_by("name")
+    else:
+        branches = Branch.objects(organization=user.organization, is_active=True).order_by("name")
+    return jsonify({"success": True, "branches": [b.to_dict() for b in branches]})
+
+
+# ------------------------------------------------------------------
+# DASHBOARD (uses loans scoped to actor's org / all for super_admin)
 # ------------------------------------------------------------------
 @app.route("/api/dashboard/stats", methods=["GET", "OPTIONS"])
 @auth_required
@@ -1474,7 +1081,7 @@ def dashboard_stats():
     if request.method == "OPTIONS":
         return "", 204
     user = current_user()
-    qs = Loan.objects(organization=user.organization)
+    qs = Loan.objects() if user.role == "super_admin" else Loan.objects(organization=user.organization)
     branch_id = request.args.get("branchId")
     if branch_id:
         try:
@@ -1518,30 +1125,9 @@ def recent_loans():
     if request.method == "OPTIONS":
         return "", 204
     user = current_user()
-    loans = Loan.objects(organization=user.organization).order_by("-created_at").limit(10)
+    qs = Loan.objects() if user.role == "super_admin" else Loan.objects(organization=user.organization)
+    loans = qs.order_by("-created_at").limit(10)
     return jsonify({"success": True, "loans": [l.to_dict() for l in loans]})
-
-
-@app.route("/api/dashboard/alerts", methods=["GET", "OPTIONS"])
-@auth_required
-def alerts():
-    if request.method == "OPTIONS":
-        return "", 204
-    user = current_user()
-    now = utcnow()
-    thirty_days = now + timedelta(days=30)
-    overdue = Loan.objects(organization=user.organization, next_payment_date__lt=now, status="repaying").limit(20)
-    defaulted = Loan.objects(organization=user.organization, status="defaulted").limit(20)
-    due_soon = Loan.objects(organization=user.organization,
-                            next_payment_date__gte=now,
-                            next_payment_date__lte=thirty_days,
-                            status="repaying").limit(20)
-    return jsonify({
-        "success": True,
-        "overdue": [l.to_dict() for l in overdue],
-        "defaulted": [l.to_dict() for l in defaulted],
-        "dueSoon": [l.to_dict() for l in due_soon],
-    })
 
 
 # ------------------------------------------------------------------
@@ -1573,33 +1159,29 @@ def expired_token(jwt_header, jwt_payload):
 
 
 # ------------------------------------------------------------------
-# AUTO-BOOTSTRAP SUPER ADMIN (runs on every app start)
+# AUTO-BOOTSTRAP (runs on import — covers gunicorn, uwsgi, etc.)
 # ------------------------------------------------------------------
 def ensure_super_admin():
     """
-    Idempotent bootstrap:
-      - Ensures an Organization exists
-      - Ensures the super admin user exists with the configured password
-    Safe to run repeatedly.
+    Idempotent:
+      - Ensures the Jafari Credit org exists
+      - Ensures SUPER_ADMIN_EMAIL exists as super_admin with SUPER_ADMIN_PASSWORD
+      - Refreshes password on every boot so we're never locked out
     """
-    # Ensure organization
-    org = Organization.objects(registration_number="REG-JAFARI-001").first()
+    org = Organization.objects(registration_number=SUPER_ADMIN_ORG_REG).first()
     if not org:
         org = Organization(
             name=SUPER_ADMIN_ORG,
-            registration_number="REG-JAFARI-001",
+            registration_number=SUPER_ADMIN_ORG_REG,
             license_number="LIC-JAFARI-001",
             address="Nairobi, Kenya",
             contact_email=SUPER_ADMIN_EMAIL,
-            contact_phone="",
             is_active=True,
         ).save()
         print(f"[BOOT] Created organization: {org.name}")
 
-    # Ensure super admin
     existing = User.objects(email=SUPER_ADMIN_EMAIL).first()
     if existing:
-        # Update password to the configured one so we're never locked out.
         existing.set_password(SUPER_ADMIN_PASSWORD)
         existing.role = "super_admin"
         existing.is_active = True
@@ -1617,11 +1199,13 @@ def ensure_super_admin():
         user.set_password(SUPER_ADMIN_PASSWORD)
         user.save()
         print(f"[BOOT] Super admin created: {user.email}")
-# Run bootstrap on every process start (covers gunicorn, uwsgi, flask run, etc.)
+
+
 try:
     ensure_super_admin()
 except Exception as e:
     print(f"[BOOT] ensure_super_admin failed: {e}")
+
 
 # ------------------------------------------------------------------
 # MAIN
@@ -1629,9 +1213,5 @@ except Exception as e:
 if __name__ == "__main__":
     print("[BOOT] MongoDB connected")
     print(f"[BOOT] FRONTEND_URL = {FRONTEND_URL}")
-    try:
-        ensure_super_admin()
-    except Exception as e:
-        print(f"[BOOT] super-admin bootstrap failed: {e}")
     print(f"[RUN] Server on http://0.0.0.0:{PORT}")
     app.run(host="0.0.0.0", port=PORT, debug=False)
