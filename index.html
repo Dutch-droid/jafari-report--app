@@ -1108,12 +1108,9 @@
                             </div>
                             <div class="form-group suggest-wrap">
                                 <label for="kyc_verified_by">Verified By (Sales Agent)</label>
-                                <input type="text" id="kyc_verified_by" placeholder="e.g. Jennifer Mwai (AGENT1114)" autocomplete="off">
+                                <input type="text" id="kyc_verified_by" placeholder="Fills in from your name and agent code" autocomplete="off">
                                 <div class="suggest-list" id="suggest_agent"></div>
-                            </div>
-                            <div class="form-group">
-                                <label for="kyc_notes">KYC Notes</label>
-                                <textarea id="kyc_notes" rows="2"></textarea>
+                                <div class="otp-hint" id="verifiedByHint">Filled in automatically from <strong>Created by</strong> and <strong>Agent Code</strong>. Type here to use a different agent.</div>
                             </div>
                         </div>
 
@@ -1645,6 +1642,7 @@
                 createdByEl.value = user.name;
                 createdByEl.classList.add('auto-filled');
             }
+            syncVerifiedBy();
 
             // Initialise the heavy UI (map, signature pads, GPS) exactly once,
             // after the container is visible so canvases get real sizes.
@@ -2178,12 +2176,44 @@
             return { name: parsed.name, code: parsed.code, role: val('user_role'), raw };
         }
 
+        // ------------------------------------------------------------
+        // "Verified By (Sales Agent)" follows the officer's name + agent code
+        // until the user types something different into it.
+        // ------------------------------------------------------------
+        function composeVerifiedBy() {
+            const name = val('created_by');
+            const code = val('agent_code');
+            if (!name && !code) return '';
+            return code ? `${name || 'Agent'} (${code})` : name;
+        }
+
+        function syncVerifiedBy(force = false) {
+            if (force) state.verifiedByManual = false;
+            if (state.verifiedByManual) return;
+            const el = getElement('kyc_verified_by');
+            const v = composeVerifiedBy();
+            el.value = v;
+            el.classList.toggle('auto-filled', !!v);
+        }
+
+        function onVerifiedByTyped() {
+            const el = getElement('kyc_verified_by');
+            const v = el.value.trim();
+            if (!v) {                      // cleared: go back to following the officer's details
+                syncVerifiedBy(true);
+                return;
+            }
+            state.verifiedByManual = v !== composeVerifiedBy();
+            el.classList.toggle('auto-filled', !state.verifiedByManual);
+        }
+
         function applyOfficerProfile(profile) {
             if (!profile) return false;
             const set = (id, v) => { const el = getElement(id); if (el && v) { el.value = v; el.classList.add('auto-filled'); } };
             set('created_by', profile.name);
             if (profile.role) getElement('user_role').value = profile.role;
             set('agent_code', profile.agent_code);
+            syncVerifiedBy();
             showToast('Officer profile loaded', 'success');
             return true;
         }
@@ -2209,6 +2239,7 @@
             const el = getElement('kyc_verified_by');
             el.value = a.raw || (a.code ? `${a.name} (${a.code})` : a.name);
             el.classList.add('auto-filled');
+            state.verifiedByManual = el.value.trim() !== composeVerifiedBy();
             showToast('Agent details filled', 'success');
         }
 
@@ -2921,6 +2952,7 @@
                 setLocation(p.lat, p.lng, 16);
             }
             if (state.user?.name) getElement('created_by').value = state.user.name;
+            syncVerifiedBy(true);
             updateMeetingDatetime();
             if (!silent) showToast('Form reset', 'success');
         }
@@ -3049,6 +3081,8 @@
             getElement('otpVerifyBtn').addEventListener('click', handleOtpVerify);
             getElement('otp_code').addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); handleOtpVerify(); } });
             getElement('customer_phone').addEventListener('input', onCustomerPhoneChanged);
+            ['created_by', 'agent_code'].forEach(id => getElement(id).addEventListener('input', () => syncVerifiedBy()));
+            getElement('kyc_verified_by').addEventListener('input', onVerifiedByTyped);
             getElement('selfieCaptureBtn').addEventListener('click', () => getElement('selfieInput').click());
             getElement('selfieRetakeBtn').addEventListener('click', handleSelfieRetake);
             getElement('selfieInput').addEventListener('change', handleSelfieFile);
