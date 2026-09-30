@@ -981,7 +981,7 @@
                         </div>
 
                         <!-- ===== OTP VERIFICATION ===== -->
-                        <div class="form-section" id="otpSection">
+                        <div class="form-section" id="otpSection" style="display:none;">
                             <div class="form-section-title"><i class="fas fa-shield-alt"></i> Customer Verification (OTP)</div>
                             <p class="otp-hint" style="margin-bottom:10px;">
                                 Send a one-time code to the customer's phone and ask them to read it to you.
@@ -1061,7 +1061,7 @@
                         </div>
 
                         <!-- ===== GEOTAGGED SELFIE ===== -->
-                        <div class="form-section" id="selfieSection">
+                        <div class="form-section" id="selfieSection" style="display:none;">
                             <div class="form-section-title"><i class="fas fa-camera"></i> Geotagged Selfie with Customer</div>
                             <p class="otp-hint" style="margin-bottom:10px;">
                                 Take a live photo of yourself with the customer. GPS and timestamp are stamped automatically.
@@ -1178,7 +1178,7 @@
                         </div>
 
                         <!-- ===== Override when OTP is unavailable ===== -->
-                        <div class="form-section" id="unverifiedSection">
+                        <div class="form-section" id="unverifiedSection" style="display:none;">
                             <div class="form-section-title">
                                 <i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i> Cannot verify customer?
                             </div>
@@ -1292,6 +1292,7 @@
         }
 
         const state = {
+            features: { otp: false, selfie: false },   // switched on/off by the backend (/api/config)
             reports: [],
             isGenerating: false,
             isBatchGenerating: false,
@@ -1652,6 +1653,22 @@
             } else if (state.map) {
                 setTimeout(() => state.map.invalidateSize(), 100);
             }
+        }
+
+        async function loadFeatures() {
+            try {
+                const r = await fetch(`${API_BASE_URL}/config`, { cache: 'no-store' });
+                const j = await r.json();
+                if (j && j.features) state.features = { otp: !!j.features.otp, selfie: !!j.features.selfie };
+            } catch (e) { /* offline: keep both off */ }
+            applyFeatures();
+        }
+
+        function applyFeatures() {
+            const show = (id, on) => { const el = getElement(id); if (el) el.style.display = on ? '' : 'none'; };
+            show('otpSection', state.features.otp);
+            show('unverifiedSection', state.features.otp);
+            show('selfieSection', state.features.selfie);
         }
 
         async function refreshCurrentUser() {
@@ -2752,8 +2769,9 @@
             data.selfie_gps = state.selfieGps || '';
             data.selfie_timestamp = state.selfieTimestamp || '';
 
-            data.otp_verification_token = state.otpVerificationToken || '';
-            data.unverified_reason = val('unverified_reason');
+            data.otp_verification_token = state.features.otp ? (state.otpVerificationToken || '') : '';
+            if (!state.features.selfie) { data.selfie_image = ''; data.selfie_gps = ''; data.selfie_timestamp = ''; }
+            data.unverified_reason = state.features.otp ? val('unverified_reason') : '';
             data.officer_gps_at_signature = getCurrentGpsString() || '';
             delete data.otp_code;
             delete data.otp_phone;
@@ -2782,7 +2800,9 @@
             }
             if (!(parseFloat(formData.loan_amount) > 0)) return showToast('Loan amount must be greater than 0', 'error');
 
-            if (state.otpVerified) {
+            if (!state.features.otp) {
+                // OTP verification is switched off - nothing to check here.
+            } else if (state.otpVerified) {
                 const cust = normalizePhone(formData.customer_phone);
                 if (cust && cust !== state.otpPhone) {
                     resetOtpState();
@@ -3152,8 +3172,8 @@
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
             getElement('footerYear').textContent = new Date().getFullYear();
-            // Wake the backend early so it's ready by the time the user signs in.
-            fetch(`${API_BASE_URL}/health`, { cache: 'no-store' }).catch(() => {});
+            // Ask the backend which optional checks are on (also wakes it up early).
+            loadFeatures();
             setupEventListeners();
 
             const inviteToken = getInviteToken();
