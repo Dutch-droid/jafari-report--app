@@ -266,6 +266,10 @@
             width: 18px; height: 18px; cursor: pointer; margin-top: 2px; flex-shrink: 0; accent-color: var(--primary);
         }
         .signature-confirmation.checked { background: #d1fae5; border-color: #6ee7b7; }
+        .absent-reason { margin-top: 8px; padding: 10px 12px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 6px; }
+        .absent-reason label { font-size: 0.8rem; color: #92400e; font-weight: 600; display: block; margin-bottom: 6px; }
+        .absent-reason textarea { width: 100%; min-height: 56px; resize: vertical; }
+        .absent-reason.hidden { display: none; }
 
         .gps-status {
             display: flex; align-items: center; gap: 8px;
@@ -574,32 +578,6 @@
             border-top: 1px solid var(--gray-200);
         }
 
-        /* ===== Reports / sign-off workflow ===== */
-        .status-badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.7rem; font-weight:700; text-transform:uppercase; white-space:nowrap; }
-        .status-badge.pending_signoff { background:#fef3c7; color:#92400e; }
-        .status-badge.final { background:#d1fae5; color:#065f46; }
-        .status-badge.returned { background:#fee2e2; color:#991b1b; }
-        .count-badge { display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 6px; border-radius:10px; background:var(--danger); color:#fff; font-size:0.72rem; font-weight:700; margin-left:4px; }
-        .workflow-card { background:white; border-radius:16px; padding:25px; box-shadow:var(--shadow-lg); margin-bottom:30px; display:none; border:2px solid var(--secondary); }
-        .workflow-card.active { display:block; }
-        .wf-item { border:1px solid var(--gray-200); border-radius:10px; padding:12px 14px; margin-bottom:10px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center; }
-        .wf-item .wf-title { font-weight:700; }
-        .wf-item .wf-meta { font-size:0.8rem; color:var(--gray-600); }
-        .wf-item .wf-note { font-size:0.8rem; margin-top:4px; }
-        .wf-item .wf-note.returned { color:#991b1b; }
-        .wf-actions { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
-        .wf-actions select { padding:5px 8px; border:2px solid var(--gray-200); border-radius:6px; font-size:0.8rem; }
-        .btn-sm { padding:6px 12px; border:none; border-radius:6px; font-size:0.8rem; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
-        .btn-sm.blue { background:var(--secondary); color:#fff; } .btn-sm.green { background:#16a34a; color:#fff; }
-        .btn-sm.red { background:var(--danger); color:#fff; } .btn-sm.grey { background:var(--gray-100); color:var(--gray-800); border:1px solid var(--gray-300); }
-        .review-table { width:100%; border-collapse:collapse; font-size:0.85rem; margin-bottom:12px; }
-        .review-table th { text-align:left; width:38%; background:var(--gray-50); padding:6px 8px; border:1px solid var(--gray-200); font-weight:600; vertical-align:top; }
-        .review-table td { padding:6px 8px; border:1px solid var(--gray-200); white-space:pre-wrap; word-break:break-word; }
-        .review-sigs { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
-        .review-sigs figure { border:1px solid var(--gray-200); border-radius:8px; padding:6px; text-align:center; font-size:0.75rem; color:var(--gray-600); }
-        .review-sigs img { max-width:100%; height:80px; object-fit:contain; display:block; margin:0 auto 4px; background:#fff; }
-        .wf-empty { text-align:center; padding:30px; color:var(--gray-600); }
-
         @media (max-width: 600px) {
             .logo img { height: 40px; }
             .logo h1 { font-size: 1.2rem; }
@@ -640,41 +618,6 @@
 
             <div class="modal-actions">
                 <button type="button" class="btn-secondary" id="hmClose"><i class="fas fa-times"></i> Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== TEAM LEADER SIGN-OFF MODAL ===== -->
-    <div class="history-modal-backdrop" id="signoffBackdrop">
-        <div class="history-modal" style="max-width:720px;">
-            <h3><i class="fas fa-file-signature"></i> Review &amp; sign off</h3>
-            <p class="modal-sub" id="signoffSub">Check the report, then sign below.</p>
-            <div id="signoffBody"></div>
-            <div class="form-group" style="margin-top:8px;">
-                <label style="font-weight:600;font-size:0.85rem;">Your signature (Team Leader)</label>
-                <div class="signature-pad-container">
-                    <canvas id="signoffCanvas"></canvas>
-                    <div class="signature-placeholder" id="signoffPlaceholder"><i class="fas fa-pen"></i> Team Leader Sign Here</div>
-                </div>
-                <div class="signature-actions">
-                    <button type="button" class="btn-signature clear" id="signoffClear"><i class="fas fa-eraser"></i> Clear</button>
-                    <button type="button" class="btn-signature undo" id="signoffUndo"><i class="fas fa-undo"></i> Undo</button>
-                </div>
-                <div class="signature-status" id="signoffStatus"><span class="not-signed">✗ Not signed</span></div>
-            </div>
-            <div class="form-group">
-                <label for="signoffComment" style="font-weight:600;font-size:0.85rem;">Comment <span style="font-weight:400;color:var(--gray-600);">(optional when approving; required when returning)</span></label>
-                <textarea id="signoffComment" rows="2" style="width:100%;padding:8px;border:2px solid var(--gray-200);border-radius:6px;font-family:inherit;"></textarea>
-            </div>
-            <label class="signature-confirmation" id="signoffConfirmBox">
-                <input type="checkbox" id="signoffConfirm">
-                <span>I have reviewed this report with the agent and approve it.</span>
-            </label>
-            <div class="modal-actions" style="flex-wrap:wrap;">
-                <button type="button" class="btn-secondary" id="signoffCancel">Cancel</button>
-                <button type="button" class="btn-secondary" id="signoffDraftPdf"><i class="fas fa-file-pdf"></i> Draft PDF</button>
-                <button type="button" class="btn-danger" id="signoffReturn"><i class="fas fa-undo"></i> Return to agent</button>
-                <button type="button" class="btn-success" id="signoffApprove"><i class="fas fa-check"></i> Approve &amp; sign</button>
             </div>
         </div>
     </div>
@@ -785,12 +728,6 @@
                         <span id="loggedInUser">Loading...</span>
                         <span class="user-role-badge" id="userRoleBadge">User</span>
                     </div>
-                    <button class="admin-panel-btn" id="myReportsBtn" style="background:#dbeafe;color:#1e40af;font-weight:600;">
-                        <i class="fas fa-folder-open"></i> My Reports
-                    </button>
-                    <button class="admin-panel-btn" id="signoffsBtn" style="display:none;background:#fef3c7;color:#92400e;font-weight:700;">
-                        <i class="fas fa-file-signature"></i> Sign-offs <span class="count-badge" id="signoffCount" style="display:none;">0</span>
-                    </button>
                     <button class="admin-panel-btn" id="adminPanelBtn" style="display:none;">
                         <i class="fas fa-users-cog"></i> <span id="adminPanelBtnText">Admin Panel</span>
                     </button>
@@ -841,12 +778,6 @@
                         <input type="date" id="auditEndDate" title="End date">
                         <input type="text" id="auditUserSearch" placeholder="Filter by officer email">
                         <input type="text" id="auditCustomerSearch" placeholder="Customer / ID / report ID">
-                        <select id="auditStatus" title="Sign-off status">
-                            <option value="">All statuses</option>
-                            <option value="pending_signoff">Awaiting sign-off</option>
-                            <option value="final">Final</option>
-                            <option value="returned">Returned</option>
-                        </select>
                         <select id="auditLevel" title="Verification level">
                             <option value="">All levels</option>
                             <option value="full">Full</option>
@@ -873,34 +804,16 @@
                                     <th>Loan</th>
                                     <th>Branch</th>
                                     <th>Report ID</th>
-                                    <th>Status</th>
                                     <th>Verification</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="auditTableBody">
-                                <tr><td colspan="9" style="text-align:center;padding:30px;">Loading...</td></tr>
+                                <tr><td colspan="8" style="text-align:center;padding:30px;">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <!-- Reports & sign-offs -->
-            <div class="workflow-card" id="workflowPanel">
-                <div class="card-header">
-                    <h2><i class="fas fa-folder-open"></i> Reports</h2>
-                    <div style="display:flex;gap:8px;">
-                        <button class="btn-secondary" id="wfRefresh"><i class="fas fa-sync"></i> Refresh</button>
-                        <button class="btn-secondary" id="wfClose"><i class="fas fa-times"></i> Close</button>
-                    </div>
-                </div>
-                <div class="admin-tabs">
-                    <button class="admin-tab active" data-wftab="mine"><i class="fas fa-user"></i> My reports</button>
-                    <button class="admin-tab" data-wftab="awaiting" id="wfAwaitingTab" style="display:none;"><i class="fas fa-file-signature"></i> Awaiting my sign-off <span class="count-badge" id="wfAwaitingCount" style="display:none;">0</span></button>
-                </div>
-                <div class="admin-tab-content active" id="wf-mine"><div class="wf-empty">Loading...</div></div>
-                <div class="admin-tab-content" id="wf-awaiting"><div class="wf-empty">Loading...</div></div>
             </div>
 
             <!-- Main Content -->
@@ -967,13 +880,6 @@
                                     <label for="agent_code">Agent Code <span class="required">*</span></label>
                                     <input type="text" id="agent_code" required placeholder="e.g. AGENT1114">
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="team_leader_id">Team Leader Name <span class="required">*</span></label>
-                                <select id="team_leader_id" required>
-                                    <option value="">Loading team leaders...</option>
-                                </select>
-                                <div class="otp-hint">Your team leader reviews and signs this report on their own account when you meet. You get a <strong>DRAFT</strong> PDF now and the final one after sign-off.</div>
                             </div>
 
                             <div class="form-row">
@@ -1221,6 +1127,37 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
+                                    <label>Team Leader Signature</label>
+                                    <div class="form-row" style="gap:8px;margin-bottom:6px;">
+                                        <div class="form-group" style="margin-bottom:0;">
+                                            <label for="team_leader_name" style="font-weight:600;font-size:0.8rem;">Team Leader Name <span class="required">*</span></label>
+                                            <input type="text" id="team_leader_name" required placeholder="e.g. Tina Wanjiku" autocomplete="off">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom:0;">
+                                            <label for="team_leader_code" style="font-weight:600;font-size:0.8rem;">Team Leader Code <span class="required">*</span></label>
+                                            <input type="text" id="team_leader_code" required placeholder="e.g. TL056" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="signature-pad-container">
+                                        <canvas id="teamLeaderSignatureCanvas"></canvas>
+                                        <div class="signature-placeholder" id="teamLeaderSignaturePlaceholder"><i class="fas fa-pen"></i> Team Leader Sign Here</div>
+                                    </div>
+                                    <div class="signature-actions">
+                                        <button type="button" class="btn-signature clear" id="clearTeamLeaderSignature"><i class="fas fa-eraser"></i> Clear</button>
+                                        <button type="button" class="btn-signature undo" id="undoTeamLeaderSignature"><i class="fas fa-undo"></i> Undo</button>
+                                        <button type="button" class="btn-signature download" id="downloadTeamLeaderSignature"><i class="fas fa-download"></i> Download</button>
+                                    </div>
+                                    <div class="signature-status" id="teamLeaderSignatureStatus"><span class="not-signed">✗ Not signed</span></div>
+                                    <label class="signature-confirmation" id="teamLeaderConfirmBox">
+                                        <input type="checkbox" id="teamLeaderConfirm">
+                                        <span>I confirm the <strong>Team Leader</strong> met the customer in person</span>
+                                    </label>
+                                    <div class="absent-reason" id="teamLeaderAbsentBox">
+                                        <label for="team_leader_absent_reason"><i class="fas fa-exclamation-triangle"></i> Team Leader did not meet the customer? Give the reason</label>
+                                        <textarea id="team_leader_absent_reason" maxlength="1000" placeholder="e.g. Team leader was at another client meeting"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
                                     <label>Agent Signature</label>
                                     <div class="signature-pad-container">
                                         <canvas id="agentSignatureCanvas"></canvas>
@@ -1234,8 +1171,12 @@
                                     <div class="signature-status" id="agentSignatureStatus"><span class="not-signed">✗ Not signed</span></div>
                                     <label class="signature-confirmation" id="agentConfirmBox">
                                         <input type="checkbox" id="agentConfirm">
-                                        <span>I confirm the <strong>Sales Agent</strong> has signed</span>
+                                        <span>I confirm the <strong>Sales Agent</strong> met the customer in person</span>
                                     </label>
+                                    <div class="absent-reason" id="agentAbsentBox">
+                                        <label for="agent_absent_reason"><i class="fas fa-exclamation-triangle"></i> Sales Agent did not meet the customer? Give the reason</label>
+                                        <textarea id="agent_absent_reason" maxlength="1000" placeholder="e.g. Customer was met by the team leader only"></textarea>
+                                    </div>
                                 </div>
 
                                 <div class="form-group full" style="grid-column: 1 / -1; margin-top: 16px; border-top: 2px dashed var(--gray-200); padding-top: 16px;">
@@ -1274,7 +1215,7 @@
                         </div>
 
                         <div class="form-actions">
-                            <button type="button" id="generateBtn" class="btn-primary"><i class="fas fa-paper-plane"></i> Submit for sign-off</button>
+                            <button type="button" id="generateBtn" class="btn-primary"><i class="fas fa-file-pdf"></i> Generate PDF</button>
                             <button type="button" id="generateAllBtn" class="btn-success"><i class="fas fa-file-archive"></i> Download All (ZIP)</button>
                             <button type="button" id="resetFormBtn" class="btn-secondary"><i class="fas fa-undo"></i> Reset</button>
                             <button type="button" id="clearAllBtn" class="btn-danger"><i class="fas fa-trash"></i> Clear List</button>
@@ -1288,7 +1229,7 @@
                         <div><span id="previewCount" class="preview-count">0 reports</span></div>
                     </div>
                     <div id="previewContent">
-                        <div class="empty-state"><i class="fas fa-file-alt"></i><p>Fill in the form and click "Submit for sign-off"</p></div>
+                        <div class="empty-state"><i class="fas fa-file-alt"></i><p>Fill in the form and click "Generate PDF"</p></div>
                     </div>
                 </div>
             </div>
@@ -1319,14 +1260,11 @@
         const AFRICA_NAIROBI_TZ = 'Africa/Nairobi';
         const MIN_PASSWORD_LENGTH = 8;
 
-        const ROLE_RANK = { super_admin: 4, admin_agent: 3, branch_manager: 2, team_leader: 2, auditor: 1, sales_agent: 1 };
+        const ROLE_RANK = { super_admin: 4, admin_agent: 3, branch_manager: 2, auditor: 1 };
         const ROLE_LABELS = {
             super_admin: 'Super Admin', admin_agent: 'Admin Agent',
-            branch_manager: 'Branch Manager', team_leader: 'Team Leader',
-            auditor: 'Auditor', sales_agent: 'Sales Agent'
+            branch_manager: 'Branch Manager', auditor: 'Auditor'
         };
-        const APPROVER_ROLES = ['team_leader', 'branch_manager'];
-        const STATUS_LABELS = { pending_signoff: 'Awaiting sign-off', final: 'Final', returned: 'Returned' };
 
         // ------------------------------------------------------------
         // HTML escaping - every value from users/server goes through this
@@ -1383,9 +1321,7 @@
             appInitialized: false,
             map: null,
             marker: null,
-            teamLeaders: [],
-            signoffPad: null,
-            signoffReportId: null,
+            teamLeaderSignaturePad: null,
             agentSignaturePad: null,
             customerSignaturePad: null,
             gpsManager: null,
@@ -1711,9 +1647,6 @@
             adminPanelBtn.style.display = canViewAudit(user) ? 'inline-flex' : 'none';
             getElement('adminPanelBtnText').textContent = canManageUsers(user) ? 'Admin Panel' : 'Audit Log';
             getElement('usersTabBtn').style.display = canManageUsers(user) ? 'inline-flex' : 'none';
-            const approver = APPROVER_ROLES.includes(user.role);
-            getElement('signoffsBtn').style.display = approver ? 'inline-flex' : 'none';
-            getElement('wfAwaitingTab').style.display = approver ? 'inline-flex' : 'none';
         }
 
         function showApp(user) {
@@ -2313,6 +2246,20 @@
             el.classList.toggle('auto-filled', !state.verifiedByManual);
         }
 
+        // The team leader is usually the same for an agent: remember the last one on this device.
+        function tlKey() { return 'jafari_last_team_leader_' + (state.user?.email || ''); }
+        function rememberTeamLeader() {
+            try { localStorage.setItem(tlKey(), JSON.stringify({ name: val('team_leader_name'), code: val('team_leader_code') })); } catch (e) {}
+        }
+        function restoreTeamLeader() {
+            try {
+                const t = JSON.parse(localStorage.getItem(tlKey()) || 'null');
+                if (!t) return;
+                if (t.name && !val('team_leader_name')) { getElement('team_leader_name').value = t.name; getElement('team_leader_name').classList.add('auto-filled'); }
+                if (t.code && !val('team_leader_code')) { getElement('team_leader_code').value = t.code; getElement('team_leader_code').classList.add('auto-filled'); }
+            } catch (e) {}
+        }
+
         function applyOfficerProfile(profile) {
             if (!profile) return false;
             const set = (id, v) => { const el = getElement(id); if (el && v) { el.value = v; el.classList.add('auto-filled'); } };
@@ -2647,33 +2594,32 @@
             add('user_email', 'auditUserSearch');
             add('customer', 'auditCustomerSearch');
             add('level', 'auditLevel');
-            add('status', 'auditStatus');
             return params;
         }
 
         async function loadAuditLog() {
             const tbody = getElement('auditTableBody');
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;">Loading...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;">Loading...</td></tr>';
             try {
                 const params = auditParams();
                 params.append('limit', '500');
                 const result = await apiJson(`/admin/audit-log?${params.toString()}`);
                 if (!result.success) {
-                    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--danger);">${esc(apiError(result, 'Error'))}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--danger);">${esc(apiError(result, 'Error'))}</td></tr>`;
                     return;
                 }
                 const entries = result.data || [];
                 renderAuditTable(entries);
                 updateAuditStats(entries);
             } catch (error) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--danger);">Failed to load</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--danger);">Failed to load</td></tr>';
             }
         }
 
         function renderAuditTable(entries) {
             const tbody = getElement('auditTableBody');
             if (!entries.length) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray-600);">' +
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray-600);">' +
                     '<i class="fas fa-history" style="font-size:2rem;display:block;margin-bottom:10px;color:var(--gray-300);"></i>No reports match these filters</td></tr>';
                 return;
             }
@@ -2689,7 +2635,9 @@
                     e.has_selfie ? '<span class="badge sig">Selfie</span>' : '',
                     e.otp_verified ? '<span class="badge verified">OTP</span>' : '',
                     `<span class="verification-badge ${level}">${level}</span>`,
-                    e.unverified_reason ? `<br><small style="color:#92400e;" title="Unverified reason">⚠ ${esc(e.unverified_reason)}</small>` : ''
+                    e.unverified_reason ? `<br><small style="color:#92400e;" title="Unverified reason">⚠ ${esc(e.unverified_reason)}</small>` : '',
+                    e.team_leader_met_customer === false ? `<br><small style="color:#92400e;" title="Team leader did not meet the customer">⚠ TL absent: ${esc(e.team_leader_absent_reason)}</small>` : '',
+                    e.agent_met_customer === false ? `<br><small style="color:#92400e;" title="Sales agent did not meet the customer">⚠ Agent absent: ${esc(e.agent_absent_reason)}</small>` : ''
                 ].join(' ');
                 const rid = esc(e.report_id);
                 return `
@@ -2700,7 +2648,6 @@
                         <td>${esc(e.loan_product || 'N/A')}<br><small style="color:var(--gray-600);">${esc(loanAmount)}</small></td>
                         <td>${esc(e.branch || 'N/A')}</td>
                         <td><code style="font-size:0.75rem;background:var(--gray-100);padding:2px 6px;border-radius:3px;">${rid}</code></td>
-                        <td>${statusCell(e)}</td>
                         <td>${badges}</td>
                         <td style="white-space:nowrap;">
                             <button class="row-btn" data-audit="pdf" data-id="${rid}" title="Download PDF"><i class="fas fa-file-pdf"></i></button>
@@ -2838,6 +2785,13 @@
         // ============================================================
         // FORM DATA
         // ============================================================
+        // Show the "reason" box only while the met-the-customer box is unticked
+        function syncAttendance() {
+            [['teamLeaderConfirm', 'teamLeaderAbsentBox'], ['agentConfirm', 'agentAbsentBox']].forEach(([cbId, boxId]) => {
+                getElement(boxId).classList.toggle('hidden', getElement(cbId).checked);
+            });
+        }
+
         function getFormData() {
             updateMeetingDatetime();
             const data = {};
@@ -2845,10 +2799,16 @@
                 if (!field.id || field.type === 'file' || field.type === 'checkbox') return;
                 data[field.id] = field.value;
             });
-            data.agent_confirmed = getElement('agentConfirm').checked;
+            data.team_leader_met_customer = getElement('teamLeaderConfirm').checked;
+            data.agent_met_customer = getElement('agentConfirm').checked;
+            data.team_leader_confirmed = data.team_leader_met_customer;
+            data.agent_confirmed = data.agent_met_customer;
+            data.team_leader_absent_reason = data.team_leader_met_customer ? '' : (data.team_leader_absent_reason || '').trim();
+            data.agent_absent_reason = data.agent_met_customer ? '' : (data.agent_absent_reason || '').trim();
             data.customer_confirmed = getElement('customerConfirm').checked;
 
             const sig = pad => pad?.isSignatureSigned() ? pad.getSignatureData() : '';
+            data.team_leader_signature_image = sig(state.teamLeaderSignaturePad);
             data.agent_signature_image = sig(state.agentSignaturePad);
             data.customer_signature_image = sig(state.customerSignaturePad);
             data.customer_signed_at = state.customerSignedAt || '';
@@ -2871,7 +2831,7 @@
         // GENERATE REPORT
         // ============================================================
         const REQUIRED_LABELS = {
-            created_by: 'Officer name', user_role: 'Your role', agent_code: 'Agent code', team_leader_id: 'Team Leader Name',
+            created_by: 'Officer name', user_role: 'Your role', agent_code: 'Agent code', team_leader_name: 'Team leader name', team_leader_code: 'Team leader code',
             meeting_datetime: 'Meeting date/time', branch: 'Branch', meeting_confirmed: 'Meeting confirmed',
             customer_name: 'Customer name', discussion_summary: 'Discussion summary',
             kyc_status: 'KYC status', loan_amount: 'Loan amount'
@@ -2903,8 +2863,20 @@
                 return;
             }
 
-            if (!formData.agent_confirmed || !formData.customer_confirmed) {
-                if (!confirm('⚠️ Not all signature confirmations are ticked. Continue anyway?')) return;
+            for (const [who, met, reasonId] of [
+                ['Team Leader', formData.team_leader_met_customer, 'team_leader_absent_reason'],
+                ['Sales Agent', formData.agent_met_customer, 'agent_absent_reason'],
+            ]) {
+                if (!met && !formData[reasonId]) {
+                    showToast(`Tick that the ${who} met the customer, or give the reason they couldn't.`, 'error');
+                    const el = getElement(reasonId);
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.focus();
+                    return;
+                }
+            }
+            if (!formData.customer_confirmed) {
+                if (!confirm('⚠️ The customer signature confirmation is not ticked. Continue anyway?')) return;
             }
 
             state.isGenerating = true;
@@ -2924,8 +2896,7 @@
                     filename: result.filename,
                     pdfBase64: result.pdf,
                     hasGPS: !!formData.gps_locator,
-                    status: result.status || 'final',
-                    teamLeaderName: result.assigned_team_leader_name || '',
+                    hasTeamLeaderSig: !!formData.team_leader_signature_image,
                     hasAgentSig: !!formData.agent_signature_image,
                     hasCustomerSig: !!formData.customer_signature_image,
                     hasSelfie: !!formData.selfie_image,
@@ -2934,13 +2905,11 @@
                 });
 
                 autoSaveAfterGenerate();
+                rememberTeamLeader();
                 updatePreview();
                 downloadBase64(result.pdf, result.filename, 'application/pdf');
-                showToast(result.status === 'pending_signoff'
-                    ? `Report ${result.report_id} sent to ${result.assigned_team_leader_name} for sign-off. Draft PDF downloaded.`
-                    : `Report ${result.report_id} saved`, 'success');
+                showToast(`Report ${result.report_id} saved (${(result.verification_level || '').toUpperCase()})`, 'success');
 
-                if (getElement('workflowPanel').classList.contains('active') && state.wfTab === 'mine') loadMyReports();
                 // The OTP token is single-use on the server; clear it so the next report re-verifies.
                 resetOtpState();
             } catch (error) {
@@ -2948,7 +2917,7 @@
             } finally {
                 state.isGenerating = false;
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for sign-off';
+                btn.innerHTML = '<i class="fas fa-file-pdf"></i> Generate PDF';
             }
         }
 
@@ -2996,7 +2965,7 @@
             const container = getElement('previewContent');
             const count = getElement('previewCount');
             if (state.reports.length === 0) {
-                container.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><p>Fill in the form and click "Submit for sign-off"</p></div>';
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><p>Fill in the form and click "Generate PDF"</p></div>';
                 count.textContent = '0 reports';
                 return;
             }
@@ -3009,7 +2978,7 @@
                             <i class="fas fa-file-pdf" style="color:#dc2626;"></i>
                             ${esc(r.customerName || 'Report')}
                             ${r.hasGPS ? '<span class="gps-badge">GPS</span>' : ''}
-                            ${r.teamLeaderName ? `<span class="status-badge pending_signoff" title="Check My Reports for the current status">Sent to ${esc(r.teamLeaderName)}</span>` : ''}
+                            ${r.hasTeamLeaderSig ? '<span class="signature-badge">TL</span>' : ''}
                             ${r.hasAgentSig ? '<span class="signature-badge">Agent</span>' : ''}
                             ${r.hasCustomerSig ? '<span class="signature-badge">Customer</span>' : ''}
                             ${r.hasSelfie ? '<span class="signature-badge">Selfie</span>' : ''}
@@ -3050,9 +3019,12 @@
                 else el.value = '';
             });
             getElement('meeting_date').classList.add('date-auto-filled');
+            state.teamLeaderSignaturePad?.clear();
             state.agentSignaturePad?.clear();
             state.customerSignaturePad?.clear();
-            ['agentConfirmBox', 'customerConfirmBox'].forEach(id => getElement(id).classList.remove('checked'));
+            ['teamLeaderConfirmBox', 'agentConfirmBox', 'customerConfirmBox'].forEach(id => getElement(id).classList.remove('checked'));
+            ['teamLeaderConfirm', 'agentConfirm', 'customerConfirm'].forEach(id => { getElement(id).checked = false; });
+            syncAttendance();
             state.customerSignedAt = null;
             state.customerSignedGps = null;
             resetOtpState();
@@ -3065,274 +3037,9 @@
             }
             if (state.user?.name) getElement('created_by').value = state.user.name;
             syncVerifiedBy(true);
-            try {   // keep the agent's usual team leader selected
-                const lastTl = localStorage.getItem(tlStoreKey());
-                if (lastTl && state.teamLeaders.some(t => t.id === lastTl)) getElement('team_leader_id').value = lastTl;
-            } catch (e) {}
+            restoreTeamLeader();
             updateMeetingDatetime();
             if (!silent) showToast('Form reset', 'success');
-        }
-
-        // ============================================================
-        // TEAM LEADER SIGN-OFF WORKFLOW
-        // ============================================================
-        function tlStoreKey() { return 'jafari_last_tl_' + (state.user?.email || ''); }
-
-        async function loadTeamLeaders() {
-            const sel = getElement('team_leader_id');
-            try {
-                const result = await apiJson('/team-leaders');
-                state.teamLeaders = result.success ? (result.data || []) : [];
-            } catch (e) { state.teamLeaders = []; }
-            const previous = sel.value || (() => { try { return localStorage.getItem(tlStoreKey()) || ''; } catch (e) { return ''; } })();
-            if (!state.teamLeaders.length) {
-                sel.innerHTML = '<option value="">No team leaders yet - ask an admin to invite one</option>';
-                return;
-            }
-            sel.innerHTML = '<option value="">Select your team leader...</option>' + state.teamLeaders.map(t =>
-                `<option value="${esc(t.id)}">${esc(t.name)} (${esc(ROLE_LABELS[t.role] || t.role)})</option>`).join('');
-            if (state.teamLeaders.some(t => t.id === previous)) sel.value = previous;
-        }
-
-        function statusBadge(status) {
-            const st = status || 'final';
-            return `<span class="status-badge ${esc(st)}">${esc(STATUS_LABELS[st] || st)}</span>`;
-        }
-
-        function waitingText(hours) {
-            if (hours == null) return '';
-            if (hours < 1) return `${Math.max(1, Math.round(hours * 60))} min`;
-            if (hours < 48) return `${Math.round(hours)} h`;
-            return `${Math.round(hours / 24)} days`;
-        }
-
-        function statusCell(e) {
-            let extra = '';
-            if (e.status === 'pending_signoff') extra = `<br><small style="color:var(--gray-600);">${esc(e.assigned_team_leader_name || '')} · waiting ${esc(waitingText(e.waiting_hours))}</small>`;
-            else if (e.status === 'final' && e.tl_signed_by_name) extra = `<br><small style="color:var(--gray-600);">by ${esc(e.tl_signed_by_name)}</small>`;
-            else if (e.status === 'returned') extra = `<br><small style="color:#991b1b;">${esc(e.return_reason || '')}</small>`;
-            return statusBadge(e.status) + extra;
-        }
-
-        function openWorkflow(tab) {
-            getElement('workflowPanel').classList.add('active');
-            switchWfTab(tab);
-            getElement('workflowPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        function switchWfTab(tab) {
-            document.querySelectorAll('[data-wftab]').forEach(t => t.classList.toggle('active', t.dataset.wftab === tab));
-            getElement('wf-mine').classList.toggle('active', tab === 'mine');
-            getElement('wf-awaiting').classList.toggle('active', tab === 'awaiting');
-            state.wfTab = tab;
-            if (tab === 'mine') loadMyReports(); else loadAwaiting();
-        }
-
-        async function loadMyReports() {
-            const box = getElement('wf-mine');
-            box.innerHTML = '<div class="wf-empty">Loading...</div>';
-            let result;
-            try { result = await apiJson('/reports/mine'); } catch (e) { box.innerHTML = '<div class="wf-empty">Connection error</div>'; return; }
-            const list = result.data || [];
-            if (!list.length) { box.innerHTML = '<div class="wf-empty">You haven\'t submitted any reports yet.</div>'; return; }
-            const tlOptions = state.teamLeaders.map(t => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');
-            box.innerHTML = list.map(r => {
-                let note = '';
-                if (r.status === 'pending_signoff') note = `<div class="wf-note">Waiting for <strong>${esc(r.assigned_team_leader_name || '')}</strong> · ${esc(waitingText(r.waiting_hours))}</div>`;
-                else if (r.status === 'final') note = `<div class="wf-note">Signed off by <strong>${esc(r.tl_signed_by_name || '-')}</strong> · ${esc(formatDateEAT(r.tl_signed_at))}${r.tl_comment ? ' · “' + esc(r.tl_comment) + '”' : ''}</div>`;
-                else if (r.status === 'returned') note = `<div class="wf-note returned"><strong>Returned by ${esc(r.returned_by_name || 'team leader')}:</strong> ${esc(r.return_reason || '')}</div>`;
-                const rid = esc(r.report_id);
-                return `<div class="wf-item">
-                    <div style="min-width:0;flex:1;">
-                        <div class="wf-title">${esc(r.customer_name || '(no name)')} ${statusBadge(r.status)}</div>
-                        <div class="wf-meta">${rid} · ${esc(formatDateEAT(r.created_at))} · ${esc(r.loan_product || '')} ${r.loan_amount ? 'KES ' + esc(Number(r.loan_amount).toLocaleString('en-KE')) : ''}</div>
-                        ${note}
-                    </div>
-                    <div class="wf-actions">
-                        <button class="btn-sm blue" data-wf="pdf" data-id="${rid}"><i class="fas fa-file-pdf"></i> ${r.status === 'final' ? 'Final PDF' : 'Draft PDF'}</button>
-                        ${r.status === 'pending_signoff' && tlOptions ? `<select data-wf-tl="${rid}"><option value="">Change team leader...</option>${tlOptions}</select>` : ''}
-                        ${r.status === 'returned' ? `<button class="btn-sm green" data-wf="redo" data-id="${rid}"><i class="fas fa-redo"></i> Start corrected report</button>` : ''}
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        async function loadAwaiting() {
-            const box = getElement('wf-awaiting');
-            box.innerHTML = '<div class="wf-empty">Loading...</div>';
-            let result;
-            try { result = await apiJson('/reports/awaiting'); } catch (e) { box.innerHTML = '<div class="wf-empty">Connection error</div>'; return; }
-            const list = result.data || [];
-            setSignoffCount(list.length);
-            if (!list.length) { box.innerHTML = '<div class="wf-empty">Nothing waiting for your sign-off. 🎉</div>'; return; }
-            box.innerHTML = list.map(r => `<div class="wf-item">
-                    <div style="min-width:0;flex:1;">
-                        <div class="wf-title">${esc(r.customer_name || '(no name)')} ${statusBadge(r.status)}</div>
-                        <div class="wf-meta">${esc(r.report_id)} · Agent: <strong>${esc(r.officer_name || r.generated_by_email || '')}</strong> ${r.agent_code ? '(' + esc(r.agent_code) + ')' : ''} · ${esc(r.branch || '')}</div>
-                        <div class="wf-meta">${esc(r.loan_product || '')} ${r.loan_amount ? 'KES ' + esc(Number(r.loan_amount).toLocaleString('en-KE')) : ''} · submitted ${esc(formatDateEAT(r.created_at))} · waiting ${esc(waitingText(r.waiting_hours))}</div>
-                    </div>
-                    <div class="wf-actions"><button class="btn-sm green" data-wf="review" data-id="${esc(r.report_id)}"><i class="fas fa-file-signature"></i> Review &amp; sign</button></div>
-                </div>`).join('');
-        }
-
-        function setSignoffCount(n) {
-            ['signoffCount', 'wfAwaitingCount'].forEach(id => {
-                const el = getElement(id);
-                el.textContent = n;
-                el.style.display = n > 0 ? 'inline-flex' : 'none';
-            });
-        }
-
-        async function refreshSignoffCount() {
-            if (!state.user || !APPROVER_ROLES.includes(state.user.role)) return;
-            try {
-                const result = await apiJson('/reports/awaiting');
-                if (result.success) setSignoffCount(result.count || 0);
-            } catch (e) {}
-        }
-
-        async function reassignReport(reportId, tlId) {
-            if (!tlId) return;
-            const tl = state.teamLeaders.find(t => t.id === tlId);
-            if (!confirm(`Send report ${reportId} to ${tl ? tl.name : 'this team leader'} for sign-off instead?`)) { loadMyReports(); return; }
-            const result = await apiJson(`/reports/${encodeURIComponent(reportId)}/reassign`, { method: 'POST', body: JSON.stringify({ team_leader_id: tlId }) });
-            showToast(result.success ? 'Team leader changed' : apiError(result, 'Could not change team leader'), result.success ? 'success' : 'error');
-            loadMyReports();
-        }
-
-        async function startCorrectedReport(reportId) {
-            const result = await apiJson(`/reports/${encodeURIComponent(reportId)}`);
-            if (!result.success) return showToast(apiError(result, 'Could not load report'), 'error');
-            const r = result.report;
-            if (!confirm('Copy the details of this returned report into the form? Signatures must be collected again.')) return;
-            resetForm(true);
-            const set = (id, v) => { const el = getElement(id); if (el && v != null && v !== '') { el.value = v; el.classList.add('auto-filled'); } };
-            set('customer_name', r.customer_name); set('customer_id', r.customer_no); set('customer_id_no', r.customer_id_no);
-            set('customer_phone', r.customer_phone); set('loan_amount', r.loan_amount); set('discussion_summary', r.discussion_summary);
-            set('meeting_location', r.meeting_location); set('kyc_verified_by', r.kyc_verified_by);
-            const prod = getElement('loan_product'); if (r.loan_product && [...prod.options].some(o => o.value === r.loan_product)) prod.value = r.loan_product;
-            const kyc = getElement('kyc_status'); if (r.kyc_status) kyc.value = r.kyc_status;
-            state.verifiedByManual = !!r.kyc_verified_by;
-            onCustomerPhoneChanged();
-            getElement('workflowPanel').classList.remove('active');
-            getElement('reportForm').scrollIntoView({ behavior: 'smooth' });
-            showToast(`Details copied from ${reportId}. Fix what the team leader asked for, collect signatures and submit.`, 'info');
-        }
-
-        function reviewRow(label, value) {
-            return `<tr><th>${esc(label)}</th><td>${esc(value == null || value === '' ? '-' : value)}</td></tr>`;
-        }
-
-        function safeImg(src) {
-            return typeof src === 'string' && /^data:image\/(png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=]+$/.test(src) ? src : '';
-        }
-
-        async function openSignoff(reportId) {
-            const result = await apiJson(`/reports/${encodeURIComponent(reportId)}`);
-            if (!result.success) return showToast(apiError(result, 'Could not load report'), 'error');
-            const r = result.report;
-            state.signoffReportId = r.report_id;
-            getElement('signoffSub').textContent = `${r.report_id} · submitted by ${r.officer_name || r.generated_by_email} on ${formatDateEAT(r.created_at)}`;
-            const custSig = safeImg(r.customer_signature_image), agentSig = safeImg(r.agent_signature_image);
-            getElement('signoffBody').innerHTML = `
-                <table class="review-table">
-                    ${reviewRow('Customer', r.customer_name)}
-                    ${reviewRow('Customer No / ID No', [r.customer_no, r.customer_id_no].filter(Boolean).join(' / '))}
-                    ${reviewRow('Phone', r.customer_phone)}
-                    ${reviewRow('Loan', `${r.loan_product || '-'} · KES ${r.loan_amount ? Number(r.loan_amount).toLocaleString('en-KE') : '-'}`)}
-                    ${reviewRow('KYC status / verified by', `${r.kyc_status || '-'} / ${r.kyc_verified_by || '-'}`)}
-                    ${reviewRow('Agent', `${r.officer_name || '-'} (${r.agent_code || '-'})`)}
-                    ${reviewRow('Team Leader', r.assigned_team_leader_name)}
-                    ${reviewRow('Branch', r.branch)}
-                    ${reviewRow('Meeting', `${(r.meeting_datetime || '').replace('T', ' ')} · ${r.meeting_location || ''}`)}
-                    ${reviewRow('GPS at meeting', r.gps)}
-                    ${reviewRow('Summary of discussion', r.discussion_summary)}
-                </table>
-                <div class="review-sigs">
-                    <figure>${custSig ? `<img src="${custSig}" alt="Customer signature">` : '<div style="height:80px;line-height:80px;">Not signed</div>'}Customer${r.customer_signed_at ? ' · ' + esc(formatDateEAT(r.customer_signed_at)) : ''}</figure>
-                    <figure>${agentSig ? `<img src="${agentSig}" alt="Agent signature">` : '<div style="height:80px;line-height:80px;">Not signed</div>'}Sales Agent</figure>
-                </div>`;
-            getElement('signoffComment').value = '';
-            getElement('signoffConfirm').checked = false;
-            getElement('signoffConfirmBox').classList.remove('checked');
-            getElement('signoffBackdrop').classList.add('show');
-            requestAnimationFrame(() => {
-                if (!state.signoffPad) state.signoffPad = new SignaturePad('signoffCanvas', 'signoffPlaceholder', 'signoffStatus');
-                else { state.signoffPad.setupCanvas(); state.signoffPad.clear(); }
-            });
-        }
-
-        function closeSignoff() {
-            getElement('signoffBackdrop').classList.remove('show');
-            state.signoffReportId = null;
-        }
-
-        async function approveSignoff() {
-            const rid = state.signoffReportId;
-            if (!rid) return;
-            if (!state.signoffPad?.isSignatureSigned()) return showToast('Please sign in the signature box.', 'error');
-            if (!getElement('signoffConfirm').checked) return showToast('Tick the box to confirm you reviewed the report.', 'error');
-            const btn = getElement('signoffApprove');
-            btn.disabled = true;
-            try {
-                const result = await apiJson(`/reports/${encodeURIComponent(rid)}/signoff`, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        signature_image: state.signoffPad.getSignatureData(),
-                        confirm: true,
-                        comment: getElement('signoffComment').value.trim(),
-                        gps: getCurrentGpsString() || ''
-                    })
-                });
-                if (!result.success) return showToast(apiError(result, 'Could not sign off'), 'error');
-                closeSignoff();
-                downloadBase64(result.pdf, result.filename, 'application/pdf');
-                showToast(`Report ${rid} signed off. Final PDF downloaded.`, 'success');
-                loadAwaiting();
-            } catch (e) { showToast('Connection error', 'error'); }
-            finally { btn.disabled = false; }
-        }
-
-        async function returnSignoff() {
-            const rid = state.signoffReportId;
-            if (!rid) return;
-            let reason = getElement('signoffComment').value.trim();
-            if (!reason) reason = (prompt('What does the agent need to fix?') || '').trim();
-            if (!reason) return showToast('A reason is needed so the agent knows what to fix.', 'error');
-            const result = await apiJson(`/reports/${encodeURIComponent(rid)}/return`, { method: 'POST', body: JSON.stringify({ reason }) });
-            if (!result.success) return showToast(apiError(result, 'Could not return report'), 'error');
-            closeSignoff();
-            showToast(`Report ${rid} returned to the agent.`, 'success');
-            loadAwaiting();
-        }
-
-        function setupWorkflowListeners() {
-            getElement('myReportsBtn').addEventListener('click', () => openWorkflow('mine'));
-            getElement('signoffsBtn').addEventListener('click', () => openWorkflow('awaiting'));
-            getElement('wfClose').addEventListener('click', () => getElement('workflowPanel').classList.remove('active'));
-            getElement('wfRefresh').addEventListener('click', () => switchWfTab(state.wfTab || 'mine'));
-            document.querySelectorAll('[data-wftab]').forEach(t => t.addEventListener('click', () => switchWfTab(t.dataset.wftab)));
-            getElement('workflowPanel').addEventListener('click', e => {
-                const b = e.target.closest('button[data-wf]');
-                if (!b) return;
-                if (b.dataset.wf === 'pdf') downloadServerReport(b.dataset.id);
-                if (b.dataset.wf === 'review') openSignoff(b.dataset.id);
-                if (b.dataset.wf === 'redo') startCorrectedReport(b.dataset.id);
-            });
-            getElement('workflowPanel').addEventListener('change', e => {
-                const sel = e.target.closest('select[data-wf-tl]');
-                if (sel) reassignReport(sel.dataset.wfTl, sel.value);
-            });
-            getElement('team_leader_id').addEventListener('change', () => {
-                try { localStorage.setItem(tlStoreKey(), getElement('team_leader_id').value); } catch (e) {}
-            });
-            getElement('signoffCancel').addEventListener('click', closeSignoff);
-            getElement('signoffApprove').addEventListener('click', approveSignoff);
-            getElement('signoffReturn').addEventListener('click', returnSignoff);
-            getElement('signoffDraftPdf').addEventListener('click', () => state.signoffReportId && downloadServerReport(state.signoffReportId));
-            getElement('signoffClear').addEventListener('click', () => state.signoffPad?.clear());
-            getElement('signoffUndo').addEventListener('click', () => state.signoffPad?.undo());
-            getElement('signoffConfirm').addEventListener('change', e => getElement('signoffConfirmBox').classList.toggle('checked', e.target.checked));
         }
 
         // ============================================================
@@ -3415,7 +3122,7 @@
             // Audit
             getElement('auditApplyFilters').addEventListener('click', loadAuditLog);
             getElement('auditClearFilters').addEventListener('click', () => {
-                ['auditStartDate', 'auditEndDate', 'auditUserSearch', 'auditCustomerSearch', 'auditLevel', 'auditStatus'].forEach(id => getElement(id).value = '');
+                ['auditStartDate', 'auditEndDate', 'auditUserSearch', 'auditCustomerSearch', 'auditLevel'].forEach(id => getElement(id).value = '');
                 loadAuditLog();
             });
             getElement('auditExportCsv').addEventListener('click', exportAuditCsv);
@@ -3465,13 +3172,16 @@
             getElement('selfieRetakeBtn').addEventListener('click', handleSelfieRetake);
             getElement('selfieInput').addEventListener('change', handleSelfieFile);
 
-            ['agentConfirm', 'customerConfirm'].forEach(id => {
+            ['teamLeaderConfirm', 'agentConfirm', 'customerConfirm'].forEach(id => {
                 const cb = getElement(id);
-                cb.addEventListener('change', () => getElement(id + 'Box').classList.toggle('checked', cb.checked));
+                cb.addEventListener('change', () => {
+                    getElement(id + 'Box').classList.toggle('checked', cb.checked);
+                    syncAttendance();
+                });
             });
+            syncAttendance();
 
             setupAutofillToolbar();
-            setupWorkflowListeners();
         }
 
         function onCustomerPhoneChanged() {
@@ -3495,6 +3205,7 @@
                 if (first && state.map) setLocation(position.lat, position.lng, 16);
             });
 
+            state.teamLeaderSignaturePad = new SignaturePad('teamLeaderSignatureCanvas', 'teamLeaderSignaturePlaceholder', 'teamLeaderSignatureStatus');
             state.agentSignaturePad = new SignaturePad('agentSignatureCanvas', 'agentSignaturePlaceholder', 'agentSignatureStatus');
             state.customerSignaturePad = new SignaturePad('customerSignatureCanvas', 'customerSignaturePlaceholder', 'customerSignatureStatus',
                 pad => {
@@ -3510,6 +3221,7 @@
                 });
 
             const padButtons = [
+                ['TeamLeader', 'teamLeaderSignaturePad', 'team_leader_signature.png'],
                 ['Agent', 'agentSignaturePad', 'agent_signature.png'],
                 ['Customer', 'customerSignaturePad', 'customer_signature.png'],
             ];
@@ -3520,9 +3232,7 @@
             });
 
             setupAutofillSuggestions();
-            loadTeamLeaders();
-            refreshSignoffCount();
-            setInterval(() => { if (state.isAuthenticated) refreshSignoffCount(); }, 120000);
+            restoreTeamLeader();
             refreshHistoryBadge();
             updatePreview();
         }
